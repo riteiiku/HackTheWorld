@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using static HackTheWorld.Constants;
-
-
+using static HackTheWorld.CodeParser;
 
 namespace HackTheWorld
 {
+    /// <summary>
+    /// ステージを表示しながらゲーム中のオブジェクトのコードを編集するシーン
+    /// </summary>
     class EditScene : Scene
     {
         private MenuItem _backButton;
@@ -15,6 +18,18 @@ namespace HackTheWorld
         private MenuItem _runButton;
         private List<MenuItem> _menuItem;
         private Stage _stage;
+        private bool _isRunning;
+        private ArrayList _str;
+
+        public EditScene()
+        {
+            _stage = Stage.CreateDemoStage();
+        }
+
+        public EditScene(string path)
+        {
+            _stage = Stage.Load(path);
+        }
 
         public override void Cleanup()
         {
@@ -36,8 +51,6 @@ namespace HackTheWorld
                 Position = new Vector(125 , 500)
             };
             _menuItem = new List<MenuItem> {_backButton, _startButton,_runButton};
-
-            _stage = Stage.CreateDemoStage();
         }
 
         public override void Update(float dt)
@@ -48,7 +61,16 @@ namespace HackTheWorld
             }
             if (_backButton.Clicked) Scene.Pop();
             if (_startButton.Clicked) Scene.Push(new GameScene(_stage));
-            if(_runButton.Clicked) 
+            if (_runButton.Clicked)
+            {
+                if (_isRunning == false)
+                {
+                    //文字列をkakikae.csにもってく
+                    _isRunning = true;
+                    string str = _stage.EditableObjects[0].Codebox.GetString();
+                    yomitori(str);
+                }
+            }
             if (Input.X.Pushed || Input.Back.Pushed)
             {
                 bool isFocused = false;
@@ -68,7 +90,7 @@ namespace HackTheWorld
                 }
                 if (Input.S.Pushed)
                 {
-                    Stage.Save(_stage);
+                    _stage.Save();
                 }
             }
 
@@ -77,7 +99,7 @@ namespace HackTheWorld
             if (Input.Control.Pressed)
             {
                 if (Input.R.Pushed) _stage = Stage.Load();
-                if (Input.S.Pushed) Stage.Save(_stage);
+                if (Input.S.Pushed) _stage.Save();
             }
 
             GraphicsContext.Clear(Color.White);

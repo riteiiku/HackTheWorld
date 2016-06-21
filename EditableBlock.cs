@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using Newtonsoft.Json;
 using static HackTheWorld.Constants;
 
 namespace HackTheWorld
 {
     /// <summary>
-    /// IEditable のテスト用
+    /// IEditable な Block
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
-    public class EditableObject : GameObject, IEditable
+    public class EditableBlock : Block, IEditable
     {
         /// <summary>
         /// 何番目の Process が実行されているか。
@@ -33,17 +30,15 @@ namespace HackTheWorld
 
         [JsonProperty("code", Order = 10)]
         public string Code => Codebox.Current.Text.ToString();
+        public bool IsWorking = false;
 
-        public EditableObject() : base(500, 300) { }
-        public EditableObject(float x, float y) : base(x, y) { }
-        public EditableObject(float x, float y, float w, float h) : base(x, y, 0, 0, w, h) { }
-        public EditableObject(float x, float y, float vx, float vy, float w, float h) : base(x, y, vx, vy, w, h) { }
+        public EditableBlock(float x, float y) : base(x, y) { }
 
         public override void Initialize()
         {
             base.Initialize();
             CanExecute = false;
-            Codebox = new CodeBox(this) {Position = Position + new Vector(50, -50)};
+            Codebox = new CodeBox(this) { Position = Position + new Vector(70, -70) };
             Processes = new List<Process>();
         }
 
@@ -54,9 +49,9 @@ namespace HackTheWorld
 
         public override void Draw()
         {
-            GraphicsContext.FillRectangle(Brushes.Turquoise, MinX, MinY, Width, Height);
+            GraphicsContext.FillRectangle(Brushes.Gold, X, Y, Width, Height);
+            GraphicsContext.DrawRectangle(Pens.Black, X, Y, Width, Height);
             Codebox.Draw();
         }
-
     }
 }

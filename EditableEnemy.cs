@@ -1,18 +1,19 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using static HackTheWorld.Constants;
 
 namespace HackTheWorld
 {
     /// <summary>
-    /// IEditable のテスト用
+    /// 編集可能な敵。
+    /// IEditable.SetDemoProcesses()によって動作を付与している。
     /// </summary>
-    [JsonObject(MemberSerialization.OptIn)]
-    public class EditableObject : GameObject, IEditable
+    class EditableEnemy : Enemy, IEditable
     {
         /// <summary>
         /// 何番目の Process が実行されているか。
@@ -30,20 +31,21 @@ namespace HackTheWorld
         /// true のとき Update() 内で Process が実行されるようになる。
         /// </summary>
         public bool CanExecute { get; set; }
-
+        
         [JsonProperty("code", Order = 10)]
         public string Code => Codebox.Current.Text.ToString();
 
-        public EditableObject() : base(500, 300) { }
-        public EditableObject(float x, float y) : base(x, y) { }
-        public EditableObject(float x, float y, float w, float h) : base(x, y, 0, 0, w, h) { }
-        public EditableObject(float x, float y, float vx, float vy, float w, float h) : base(x, y, vx, vy, w, h) { }
+        public EditableEnemy(float x, float y) : base(x, y) { }
+
+        public EditableEnemy(float x, float y, float vx, float vy) : base(x, y, vx, vy) { }
+
+        public EditableEnemy(float x, float y, float vx, float vy, float w, float h) : base(x, y, vx, vy, w, h) { }
 
         public override void Initialize()
         {
             base.Initialize();
             CanExecute = false;
-            Codebox = new CodeBox(this) {Position = Position + new Vector(50, -50)};
+            Codebox = new CodeBox(this) { Position = Position + new Vector(50, -50) };
             Processes = new List<Process>();
         }
 
@@ -54,9 +56,8 @@ namespace HackTheWorld
 
         public override void Draw()
         {
-            GraphicsContext.FillRectangle(Brushes.Turquoise, MinX, MinY, Width, Height);
+            base.Draw();
             Codebox.Draw();
         }
-
     }
 }

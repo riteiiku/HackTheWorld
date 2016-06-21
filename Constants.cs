@@ -8,6 +8,9 @@ using System.Windows.Forms;
 
 namespace HackTheWorld
 {
+    /// <summary>
+    /// 各種定数を格納する。
+    /// </summary>
     public static partial class Constants
     {
         /// <summary>
@@ -18,7 +21,7 @@ namespace HackTheWorld
         /// <summary>
         /// スケール。
         /// </summary>
-        public static readonly int Scale = 100;
+        public static readonly int Scale = 100000;
 
         /// <summary>
         /// ウィンドウサイズ。
@@ -36,17 +39,42 @@ namespace HackTheWorld
         /// </summary>
         public static readonly int Gravity = CellSize * 25;
 
-
         /// <summary>
         /// オブジェクトのタイプ。
         /// </summary>
         public enum ObjectType
         {
-            Player, Block, Enemy, Item
+            Player=0, Block=1, Enemy=2, Item=3,
+            Gate=100
         }
 
+        /// <summary>
+        /// アイテムのタイプ。
+        /// </summary>
+        public enum ItemEffects
+        {
+            Bigger, Smaller
+        }
+
+        /// <summary>
+        /// どこからでも描画できるようにするために使っている。
+        /// 同時に別スレッドからアクセスさせると落ちるので、これに対して非同期な処理は行わないように。
+        /// </summary>
         public static Graphics GraphicsContext;
+
+        /// <summary>
+        /// クリップボードをいじるのに必要だった。
+        /// </summary>
         public static Form WindowContext;
+
+
+        public static Func<int> CreateCounter()
+        {
+            var i = 0;
+            return () => i++;
+        }
+
+        public static Func<int> Counter = CreateCounter();
 
     }
 }

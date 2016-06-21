@@ -7,6 +7,9 @@ using static HackTheWorld.Constants;
 
 namespace HackTheWorld
 {
+    /// <summary>
+    /// EditableObject の動作確認をするシーン。
+    /// </summary>
     class ProcessTestScene : Scene
     {
         Image _img;
@@ -29,13 +32,14 @@ namespace HackTheWorld
             _menuItem = new List<MenuItem> {_backButton};
             _pobj = new EditableObject();
 
-
             _pobj.SetProcesses( new [] {
                 new Process((obj, dt) => { obj.Size = new Vector(10, 10); }),
                 new Process((obj, dt) => { obj.X += 100*dt; }, 1.0f),
                 new Process((obj, dt) => { obj.Size = new Vector(30, 30); }, 2.0f),
+                new Process((obj, dt) => { obj.Size = new Vector(300, 300); }, 1.0f)
             });
-            _pobj.Compile();
+            _pobj.Compile(new Stage());
+            _pobj.Execute();
 
         }
 

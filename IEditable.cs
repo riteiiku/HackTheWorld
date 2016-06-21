@@ -18,10 +18,22 @@ namespace HackTheWorld
     [JsonObject(MemberSerialization.OptIn)]
     public interface IEditable
     {
+        /// <summary>
+        /// 何番目の Process が実行されているか。
+        /// </summary>
         int ProcessPtr { get; set; }
-        IEnumerator Routine { get; set; }
-        CodeBox Codebox { get; }
+        /// <summary>
+        /// 自身のコードを編集するテキストエディタ。
+        /// </summary>
+        CodeBox Codebox { get; set; }
+        /// <summary>
+        /// 自身の動作を格納する。
+        /// </summary>
         List<Process> Processes { get; set; }
+        /// <summary>
+        /// true のとき Update() で Process が実行されるようになる。
+        /// </summary>
+        bool CanExecute { get; set; }
         // GameObject 由来のプロパティ
         float X { get; set; }
         float Y { get; set; }
@@ -49,6 +61,8 @@ namespace HackTheWorld
         bool Contains(GameObject obj);
         bool Intersects(GameObject obj);
         bool CollidesWith(GameObject obj);
+        bool RiddenBy(GameObject obj);
+        bool Nearby(GameObject obj);
         bool InWindow();
     }
 
@@ -64,11 +78,6 @@ namespace HackTheWorld
             return self.Codebox.IsFocused;
         }
 
-        public static bool CanExecute(this IEditable self)
-        {
-            return self.Routine != null;
-        }
-
         public static void SetProcesses(this IEditable self, Process[] processes)
         {
             self.Processes = processes.ToList();
@@ -81,12 +90,31 @@ namespace HackTheWorld
 
         public static void AddProcess(this IEditable self, Process process)
         {
+            if (self.Processes == null) self.Processes = new List<Process>();
             self.Processes.Add(process);
+        }
+
+        public static void AddProcess(this IEditable self, ExecuteWith executeWith, float seconds)
+        {
+            if (self.Processes == null) self.Processes = new List<Process>();
+            self.Processes.Add(new Process(executeWith, seconds));
+        }
+
+        public static void AddProcess(this IEditable self, ExecuteWith executeWith)
+        {
+            if (self.Processes == null) self.Processes = new List<Process>();
+            self.Processes.Add(new Process(executeWith));
         }
 
         public static void Update(this IEditable self, float dt)
         {
-            if (self.Processes == null) return;
+            if (Scene.Current is EditScene)
+            {
+                if (self.Clicked) self.Codebox.Focus();
+                self.Codebox.Update();
+            }
+            if (!self.CanExecute || self.Processes == null) return;
+
             var process = self.Processes[self.ProcessPtr];
             if (process.ElapsedTime * 1000 <= process.MilliSeconds)
             {
@@ -97,12 +125,9 @@ namespace HackTheWorld
             {
                 self.ProcessPtr++;
             }
-
-            if (self.Clicked) self.Codebox.Focus();
-            self.Codebox.Update();
         }
 
-        public static void Compile(this IEditable self)
+        public static void Compile(this IEditable self, Stage stage)
         {
             string str = self.Codebox.GetString();
             // ここにstring型をProcess型に変換する処理を書く。
@@ -132,6 +157,28 @@ namespace HackTheWorld
 
                 BasicAction(self, tmp);
 
+            }
+        }
+
+        public static void SetDemoProcesses(this IEditable self, Stage s)
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                if (i%2 == 0) self.AddProcess((obj, dt) => { obj.VX = CellSize; });
+                else self.AddProcess((obj, dt) => { obj.VX = -CellSize; });
+                self.AddProcess((obj, dt) => { obj.Move(dt); }, 2.0f);
+                self.AddProcess((obj, dt) => { obj.VX = 0; });
+                self.AddProcess((obj, dt) => { obj.Move(dt); }, 0.25f);
+                self.AddProcess((obj, dt) =>
+                {
+                    if (obj.Nearby(s.Player))
+                    {
+                        var b = new Bullet(self.X, self.MidY, -50, 0, 10, 10);
+                        s.Bullets.Add(b);
+                        s.Objects.Add(b);
+                    }
+                });
+                self.AddProcess((obj, dt) => { obj.Move(dt); }, 0.25f);
             }
         }
 
@@ -205,7 +252,11 @@ namespace HackTheWorld
 
         }
 
-
+        public static void Execute(this IEditable self)
+        {
+            self.ProcessPtr = 0;
+            self.CanExecute = true;
+        }
     }
 
 }

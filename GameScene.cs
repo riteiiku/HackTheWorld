@@ -3,44 +3,41 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 using static HackTheWorld.Constants;
 
 namespace HackTheWorld
 {
+    /// <summary>
+    /// 実際にプレイヤーを動かしたりして遊ぶシーン
+    /// </summary>
     class GameScene : Scene
     {
         // ゲーム画面外の変数の定義
+        private Image _bgImage;
         private List<MenuItem> _menuItem;
         private MenuItem _backButton;
         private MenuItem _resetButton;
         private MenuItem _pauseButton;
         // ゲーム内変数宣言
+        private readonly Stage _stage;
         private List<GameObject> _objects;
         private Player _player;
         private List<Block> _blocks;
         private List<IEditable> _editableObjects;
         private List<Enemy> _enemies;
+        private List<Bullet> _bullets;
         private List<Item> _items;
+        private List<Gate> _gates;
 
         public GameScene()
         {
-            var stage = Stage.CreateDemoStage();
-            _objects = stage.Objects;
-            _player = stage.Player;
-            _blocks = stage.Blocks;
-            _editableObjects = stage.EditableObjects;
-            _enemies = stage.Enemies;
-            _items = stage.Items;
+            _stage = Stage.CreateDemoStage();
         }
 
         public GameScene(Stage stage)
         {
-            _objects = stage.Objects;
-            _player =  stage.Player;
-            _blocks = stage.Blocks;
-            _editableObjects = stage.EditableObjects;
-            _enemies = stage.Enemies;
-            _items = stage.Items;
+            _stage = stage;
         }
 
         public override void Cleanup()
@@ -65,8 +62,34 @@ namespace HackTheWorld
                 Position = new Vector(125, 600)
             };
             _menuItem = new List<MenuItem> {_backButton, _resetButton, _pauseButton};
+            _bgImage = Image.FromFile(@"image\backscreen.bmp");
 
-            foreach (var o in _editableObjects) if (!o.CanExecute()) o.Compile();
+            // CodeParser ができていないとeditableObjectsが機能しない。
+            // shallow copy だとコンティニュー時に途中からスタートになる。
+             var s = _stage;
+//            var s = _stage.Replica; // CodeParser ができたらこちらに切り替える。
+            _objects = s.Objects;
+            _player = s.Player;
+            _blocks = s.Blocks;
+            _editableObjects = s.EditableObjects;
+            _enemies = s.Enemies;
+            _bullets = s.Bullets;
+            _items = s.Items;
+            _gates = s.Gates;
+
+            foreach (var o in _editableObjects)
+            {
+                if (o.Processes == null || o.Processes.Count == 0)
+                {
+                    o.SetDemoProcesses(s);
+                    o.Execute();
+                }
+                else
+                {
+                    o.Compile(s);
+                    o.Execute();
+                }
+            }
 
         }
 
@@ -93,6 +116,7 @@ namespace HackTheWorld
                     _editableObjects = stage.EditableObjects;
                     _enemies = stage.Enemies;
                     _items = stage.Items;
+                    _gates = stage.Gates;
                 }
                 if (Input.S.Pushed)
                 {
@@ -102,10 +126,16 @@ namespace HackTheWorld
                         Blocks = _blocks,
                         EditableObjects = _editableObjects,
                         Enemies = _enemies,
-                        Items = _items
+                        Items = _items,
+                        Gates = _gates
                     };
-                    Stage.Save(stage);
+                    stage.Save(DateTime.Now.ToString("MMddHHmmss") + ".json");
                 }
+            }
+
+            if (Input.Control.Pressed && Input.Shift.Pressed && Input.S.Pushed)
+            {
+
             }
 
             if (_player == null) return;
@@ -135,9 +165,25 @@ namespace HackTheWorld
             }
 
             _player.Update(dt);
+            foreach (var enemy in _enemies)
+            {
+                enemy.Update(dt);
+            }
+            foreach (var bullet in _bullets)
+            {
+                bullet.Update(dt);
+            }
             foreach (var obj in _editableObjects)
             {
                 obj.Update(dt);
+            }
+
+            foreach (var g in _gates)
+            {
+                if (_player.Intersects(g))
+                {
+                    Scene.Push(new EditScene(g.NextStage));
+                }
             }
 
             // PlayerとBlockが重ならないように位置を調整
@@ -147,23 +193,30 @@ namespace HackTheWorld
             }
 
             // アイテム取得判定
-            for (int i = _items.Count; --i >= 0;)
+            foreach (var item in _items)
             {
-                if (_player.Intersects(_items[i]))
+                if (_player.Intersects(item) && item.IsAlive)
                 {
-                    _player.Y -= CellSize / 4;
-                    _player.Height += CellSize / 4;
-                    _player.Width  = CellSize;
-                    _player.jumpspeed = -CellSize * 13; // h=v^2/2g
-                    _objects.Remove(_items[i]);
-                    _items.RemoveAt(i);
+                    item.GainedBy(_player);
                 }
             }
 
             // 死亡判定
             foreach (var enemy in _enemies)
             {
-                if (_player.Intersects(enemy)) _player.Die();
+                if (_player.Intersects(enemy))
+                {
+                    _player.Die();
+                    enemy.Die();
+                }
+            }
+            foreach (var bullet in _bullets)
+            {
+                if (_player.Intersects(bullet))
+                {
+                    _player.Die();
+                    bullet.Die();
+                }
             }
 
             // 画面のクリア
@@ -183,7 +236,7 @@ namespace HackTheWorld
         private void ScreenClear()
         {
             GraphicsContext.Clear(Color.White);
-            GraphicsContext.DrawImage(Image.FromFile(@"image\backscreen.bmp"),0,0);
+            GraphicsContext.DrawImage(_bgImage,0,0);
             for (int ix = 0; ix < ScreenWidth; ix += CellSize)
             {
                 GraphicsContext.DrawLine(Pens.LightGray, ix, 0, ix, ScreenHeight);

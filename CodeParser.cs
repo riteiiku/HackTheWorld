@@ -1,22 +1,13 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using static HackTheWorld.Constants;
+using System.Data;
 using System.Text.RegularExpressions;
-
+using System.Windows.Forms;
 
 namespace HackTheWorld
 {
     public static class CodeParser
     {
-
-
-
         public static Tuple<int,int>[] forset(ArrayList sArray)
         {
             ArrayList forArray = new ArrayList();
@@ -51,6 +42,7 @@ namespace HackTheWorld
             }
             return t;
         }
+
         public static Tuple<int,int>[] ifset(ArrayList sArray)
         {
             ArrayList ifArray = new ArrayList();
@@ -86,6 +78,7 @@ namespace HackTheWorld
             }
             return t;
         }
+
         public static Tuple<int,int>[] whileset(ArrayList sArray)
         {
             ArrayList whileArray = new ArrayList();
@@ -121,6 +114,7 @@ namespace HackTheWorld
             }
             return t;
         }
+
         public static Tuple<int,int>[] allset(ArrayList sArray)
         {
             ArrayList allArray = new ArrayList();
@@ -149,10 +143,11 @@ namespace HackTheWorld
             }
             return t;
         }
+
         public static void Has(ArrayList sArray,int i,Hashtable hash)
         {
             string m1, m2;
-            if(System.Text.RegularExpressions.Regex.IsMatch((string)sArray[i],@"\s*\w+\s*=\s*\d+\s*"))
+            if(Regex.IsMatch((string)sArray[i],@"\s*\w+\s*=\s*\d+\s*"))
             {
 
                 Regex reg1 = new Regex(@"\w+");
@@ -165,8 +160,7 @@ namespace HackTheWorld
 
                 hash[m1] = m2;
             }
-            if(System.Text.RegularExpressions.Regex.IsMatch((string)sArray[i],@"\s*(?<name>[a-zA-z]+)\s*=\s*(?<value>[a-zA-z]+)\s*"))
-
+            if(Regex.IsMatch((string)sArray[i],@"\s*(?<name>[a-zA-z]+)\s*=\s*(?<value>[a-zA-z]+)\s*"))
             {
 
                 Regex reg = new Regex(@"\s*(?<name>[a-zA-z]+)\s*=\s*(?<value>[a-zA-z]+)\s*");
@@ -179,21 +173,21 @@ namespace HackTheWorld
                     hash[m1] = hash[m2];
                 }
             }
-            if(System.Text.RegularExpressions.Regex.IsMatch((string)sArray[i],@"\s*(?<name>[a-zA-z]+)\s*\+\+"))
+            if(Regex.IsMatch((string)sArray[i],@"\s*(?<name>[a-zA-z]+)\s*\+\+"))
             {
                 Regex r = new Regex(@"(?<name>[a-zA-z]+)\s*\+\+");
                 Match m = r.Match((string)sArray[i]);
                 m1 = m.Groups["name"].Value;
                 hash[m1] = Convert.ToInt32(hash[m1]) + 1;
             }
-            if(System.Text.RegularExpressions.Regex.IsMatch((string)sArray[i],@"\s*(?<name>[a-zA-z]+)\s*\-\-"))
+            if(Regex.IsMatch((string)sArray[i],@"\s*(?<name>[a-zA-z]+)\s*\-\-"))
             {
                 Regex r = new Regex(@"(?<name>[a-zA-z]+)\s*\-\-");
                 Match m = r.Match((string)sArray[i]);
                 m1 = m.Groups["name"].Value;
                 hash[m1] = Convert.ToInt32(hash[m1]) - 1;
             }
-            if(System.Text.RegularExpressions.Regex.IsMatch((string)sArray[i],@"\s*(?<name>[a-zA-z]+)\s*\+\=\s*(?<value>\d+)"))
+            if(Regex.IsMatch((string)sArray[i],@"\s*(?<name>[a-zA-z]+)\s*\+\=\s*(?<value>\d+)"))
             {
                 Regex r = new Regex(@"(?<name>[a-zA-z]+)\s*\+\=\s*(?<value>\d+)");
                 Match m = r.Match((string)sArray[i]);
@@ -201,7 +195,7 @@ namespace HackTheWorld
                 m2 = m.Groups["value"].Value;
                 hash[m1] = Convert.ToInt32(hash[m1]) + int.Parse(m2);
             }
-            if(System.Text.RegularExpressions.Regex.IsMatch((string)sArray[i],@"\s*(?<name>[a-zA-z]+)\s*\-\=\s*(?<value>\d+)"))
+            if(Regex.IsMatch((string)sArray[i],@"\s*(?<name>[a-zA-z]+)\s*\-\=\s*(?<value>\d+)"))
             {
                 Regex r = new Regex(@"(?<name>[a-zA-z]+)\s*\+\=\s*(?<value>\d+)");
                 Match m = r.Match((string)sArray[i]);
@@ -241,10 +235,6 @@ namespace HackTheWorld
 
                 }
             }
-
-
-
-
         }
 
         public static ArrayList yomitori(string s1)
@@ -481,11 +471,11 @@ namespace HackTheWorld
             //typeを3つ作ることにする
 
             //for(i=0;i<5;i++)がtype1
-            if(System.Text.RegularExpressions.Regex.IsMatch((string)sArray[home],@"for\s*\(\s*\w+\s*\=\s*\w+\s*;\s*\w+\s*" + @"<|>|(<=)|(>=)|(==)" + @"\s*\w+\s*;\s*\w+[\+\+|\-\-|\+=\w+|\-=\w+]\)")) type = 1;
+            if(Regex.IsMatch((string)sArray[home],@"for\s*\(\s*\w+\s*\=\s*\w+\s*;\s*\w+\s*" + @"<|>|(<=)|(>=)|(==)" + @"\s*\w+\s*;\s*\w+[\+\+|\-\-|\+=\w+|\-=\w+]\)")) type = 1;
             //for i=0 to 3がtype2
-            if(System.Text.RegularExpressions.Regex.IsMatch((string)sArray[home],@"for\s*\w+\s*=\s*\w+\s*to\s*\w+")) type = 2;
+            if(Regex.IsMatch((string)sArray[home],@"for\s*\w+\s*=\s*\w+\s*to\s*\w+")) type = 2;
             //for 2とかをtype3とする
-            if(System.Text.RegularExpressions.Regex.IsMatch((string)sArray[home],@"for\s*\w+")) type = 3;
+            if(Regex.IsMatch((string)sArray[home],@"for\s*\w+")) type = 3;
 
             switch(type)
             {
@@ -612,7 +602,7 @@ namespace HackTheWorld
                     Match m3 = re3.Match((string)sArray[home]);
                     int n = 0;
                     if(hash.ContainsKey(m3.Groups["repeat"].Value)) n = Convert.ToInt32(hash[m3.Groups["repeat"].Value]);
-                    else if(!int.TryParse((string)m3.Groups["repeat"].Value,out n))
+                    else if(!int.TryParse(m3.Groups["repeat"].Value,out n))
                     {
                         MessageBox.Show("(For type3)数字代入してますか？");
                         return;
@@ -805,7 +795,7 @@ namespace HackTheWorld
                         i = tmp + 1;
                         break;
                     }
-                    else tmp++;
+                    tmp++;
                     if(home + tmp >= sArray.Count) return;
                 }
                 while(!firstend(sArray,home + i) && !firstbreak(sArray,home + i - 1))
@@ -868,9 +858,6 @@ namespace HackTheWorld
                     }
                 }
             }
-
-
-            return;
         }
 
         public static void While(ArrayList sArray,ArrayList result,int home,Hashtable hash)
@@ -976,8 +963,6 @@ namespace HackTheWorld
             }
         }
 
-
-
         //結果がintになる体で作る
         public static void FourOperations(ArrayList sArray,int i)
         {
@@ -995,7 +980,7 @@ namespace HackTheWorld
             }
 
             //ここで計算
-            System.Data.DataTable dt = new System.Data.DataTable();
+            DataTable dt = new DataTable();
             //Dictionary<string , string> dict = new Dictionary<string , string>( );
             //dict.Add("x" , "3");
             //string strOriginal = "3*x+1";
@@ -1092,12 +1077,11 @@ namespace HackTheWorld
         public static bool boolfor(ArrayList sArray,int home)
         {
             //一致してるかは知りたいけどうしろに余計なのがついてたらはじきたい
-            if(System.Text.RegularExpressions.Regex.IsMatch((string)sArray[home],@"^for\s*\(\s*\w+\s*\=\s*\w+\s*;\s*\w+\s*" + @"<|>|<=|>=" + @"\s*\w+\s*;\s*\w+[\+\+|\-\-|\+=\w+|\-=\w+]\)\s*$")) return true;
-            if(System.Text.RegularExpressions.Regex.IsMatch((string)sArray[home],@"^for\s*\w+\s*=\s*\w+\s*to\s*\w+\s*$")) return true;
-            if(System.Text.RegularExpressions.Regex.IsMatch((string)sArray[home],@"^for\s*\w+\s*$")) return true;
+            if(Regex.IsMatch((string)sArray[home],@"^for\s*\(\s*\w+\s*\=\s*\w+\s*;\s*\w+\s*" + @"<|>|<=|>=" + @"\s*\w+\s*;\s*\w+[\+\+|\-\-|\+=\w+|\-=\w+]\)\s*$")) return true;
+            if(Regex.IsMatch((string)sArray[home],@"^for\s*\w+\s*=\s*\w+\s*to\s*\w+\s*$")) return true;
+            if(Regex.IsMatch((string)sArray[home],@"^for\s*\w+\s*$")) return true;
             return false;
         }
-
 
         public static bool boolif(ArrayList sArray,int home)
         {
@@ -1110,9 +1094,9 @@ namespace HackTheWorld
 
             for(int i = 0;i < re.Length;i++)
             {
-                if(System.Text.RegularExpressions.Regex.IsMatch((string)sArray[home],@"if\s*\(" + re[i] + @"\)\s*"))
+                if(Regex.IsMatch((string)sArray[home],@"if\s*\(" + re[i] + @"\)\s*"))
                 {
-                    if(System.Text.RegularExpressions.Regex.IsMatch((string)sArray[home],@"if\s*\(" + re[i] + @"\)\s*."))
+                    if(Regex.IsMatch((string)sArray[home],@"if\s*\(" + re[i] + @"\)\s*."))
                     {
                         return false;
                     }
@@ -1121,7 +1105,6 @@ namespace HackTheWorld
             }
             return false;
         }
-
 
         //この辺はifの中に書くとき短くしたいからいる
         public static bool firstfor(ArrayList sArray,int i)
@@ -1179,35 +1162,35 @@ namespace HackTheWorld
                 int sahen = int.Parse(m1.Groups["sahen"].Value);
                 int uhen = int.Parse(m1.Groups["uhen"].Value);
                 if(sahen < uhen) return true;
-                else return false;
+                return false;
             }
             if(m2.Length > 0)
             {
                 int sahen = int.Parse(m2.Groups["sahen"].Value);
                 int uhen = int.Parse(m2.Groups["uhen"].Value);
                 if(sahen > uhen) return true;
-                else return false;
+                return false;
             }
             if(m3.Length > 0)
             {
                 int sahen = int.Parse(m3.Groups["sahen"].Value);
                 int uhen = int.Parse(m3.Groups["uhen"].Value);
                 if(sahen <= uhen) return true;
-                else return false;
+                return false;
             }
             if(m4.Length > 0)
             {
                 int sahen = int.Parse(m4.Groups["sahen"].Value);
                 int uhen = int.Parse(m4.Groups["uhen"].Value);
                 if(sahen >= uhen) return true;
-                else return false;
+                return false;
             }
             if(m5.Length > 0)
             {
                 int sahen = int.Parse(m5.Groups["sahen"].Value);
                 int uhen = int.Parse(m5.Groups["uhen"].Value);
                 if(sahen == uhen) return true;
-                else return false;
+                return false;
             }
             return false;
         }
