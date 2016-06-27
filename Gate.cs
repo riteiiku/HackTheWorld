@@ -7,10 +7,7 @@ namespace HackTheWorld
     public class Gate : GameObject
     {
         [JsonProperty("next", Order = 0)]
-        public string Next
-
-
-        { get; set; }
+        public string NextStage{ get; set; }
 
         public Gate(float x, float y) : base(x, y) {}
 
