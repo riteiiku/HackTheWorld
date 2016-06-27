@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Text;
 using System.Windows.Forms;
-using Newtonsoft.Json;
 using static HackTheWorld.Constants;
 
 namespace HackTheWorld
@@ -46,8 +42,10 @@ namespace HackTheWorld
             if (_backButton.Clicked) Scene.Pop();
             if (_startButton.Clicked)
             {
-                Scene.Push(new GameScene(_mapEditor.GenerateStage()));
+                Scene.Push(new EditScene(_mapEditor.GenerateStage()));
             }
+
+            if (Input.Control.Pressed && Input.S.Pushed) _mapEditor.GenerateStage().Save();
 
             if ((Input.X.Pushed || Input.Back.Pushed)) Scene.Pop();
             if (Input.Control.Pressed && Input.W.Pushed) Application.Exit();

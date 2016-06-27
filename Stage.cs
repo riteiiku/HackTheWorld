@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static HackTheWorld.Constants;
@@ -42,7 +40,6 @@ namespace HackTheWorld
             Rows = 9;
             Cols = 16;
             Objects = new List<GameObject>();
-            Player = new Player();
             Blocks = new List<Block>();
             EditableObjects = new List<IEditable>();
             Enemies = new List<Enemy>();
@@ -59,7 +56,6 @@ namespace HackTheWorld
             Rows = r;
             Cols = c;
             Objects = new List<GameObject>();
-            Player = new Player();
             Blocks = new List<Block>();
             EditableObjects = new List<IEditable>();
             Enemies = new List<Enemy>();
@@ -82,19 +78,7 @@ namespace HackTheWorld
         {
             string json = JsonConvert.SerializeObject(this, Formatting.Indented);
             if (!Directory.Exists(@".\stage")) Directory.CreateDirectory(@".\stage");
-            StreamWriter sw = new StreamWriter(@".\stage\test.json", false, Encoding.GetEncoding("utf-8"));
-            sw.Write(json);
-            sw.Close();
-        }
-
-        /// <summary>
-        /// パスを指定してステージを保存する。
-        /// </summary>
-        public void Save(string path)
-        {
-            string json = JsonConvert.SerializeObject(this, Formatting.Indented);
-            if (!Directory.Exists(@".\stage")) Directory.CreateDirectory(@".\stage");
-            StreamWriter sw = new StreamWriter(@".\stage\" + path, false, Encoding.GetEncoding("utf-8"));
+            StreamWriter sw = new StreamWriter(@".\stage\" + DateTime.Now.ToString("MMddHHmmss") + ".json", false, Encoding.GetEncoding("utf-8"));
             sw.Write(json);
             sw.Close();
         }
@@ -102,15 +86,6 @@ namespace HackTheWorld
         /// <summary>
         /// 保存されたステージを読み込む。
         /// </summary>
-        public static Stage Load()
-        {
-            if (!File.Exists(@".\stage\test.json")) return null;
-            StreamReader sr = new StreamReader(@".\stage\test.json", Encoding.GetEncoding("utf-8"));
-            string json = sr.ReadToEnd();
-            sr.Close();
-            return Parse(json);
-        }
-
         public static Stage Load(string path)
         {
             Debug.Assert(File.Exists(@".\stage\" + path), "The requested path not exists.");
@@ -132,132 +107,47 @@ namespace HackTheWorld
                 switch ((string)obj["type"])
                 {
                     case "Block":
+                        if (obj["code"] != null)
                         {
-                            if (obj["code"] != null)
-                            {
-                                var b = new EditableBlock((float)obj["x"], (float)obj["y"]);
-                                b.Codebox.Current.Text = new StringBuilder((string)obj["code"]);
-                                stage.Blocks.Add(b);
-                                stage.EditableObjects.Add(b);
-                                stage.Objects.Add(b);
-                            }
-                            else
-                            {
-                                Block b = new Block((float)obj["x"], (float)obj["y"]);
-                                stage.Blocks.Add(b);
-                                stage.Objects.Add(b);
-                            }
-                            break;
+                            var b = new EditableBlock((float) obj["x"], (float) obj["y"]) {
+                                Code = (string) obj["code"],
+                                Name = (string) obj["name"] ?? "name was null"
+                            };
+                            stage.Blocks.Add(b);
+                            stage.EditableObjects.Add(b);
+                            stage.Objects.Add(b);
                         }
+                        else
+                        {
+                            Block b = new Block((float)obj["x"], (float)obj["y"]);
+                            stage.Blocks.Add(b);
+                            stage.Objects.Add(b);
+                        }
+                        break;
                     case "Enemy":
-                        {
-                            Enemy e = new Enemy((float)obj["x"], (float)obj["y"], (float)obj["vx"], (float)obj["vy"], (float)obj["width"], (float)obj["height"]);
-                            stage.Enemies.Add(e);
-                            stage.Objects.Add(e);
-                            break;
-                        }
+                        Enemy e = new Enemy((float)obj["x"], (float)obj["y"], (float)obj["vx"], (float)obj["vy"], (float)obj["width"], (float)obj["height"]);
+                        stage.Enemies.Add(e);
+                        stage.Objects.Add(e);
+                        break;
                     case "Item":
-                        {
-                            Item i = new Item((float)obj["x"], (float)obj["y"], 0, 0, (float)obj["width"], (float)obj["height"], (ItemEffects)Enum.Parse(typeof(ItemEffects), (string)obj["effect"]));
-                            stage.Items.Add(i);
-                            stage.Objects.Add(i);
-                            break;
-                        }
+                        Item i = new Item((float)obj["x"], (float)obj["y"], 0, 0, (float)obj["width"], (float)obj["height"], (ItemEffects)Enum.Parse(typeof(ItemEffects), (string)obj["effect"]));
+                        stage.Items.Add(i);
+                        stage.Objects.Add(i);
+                        break;
                     case "Player":
-                        {
-                            var p = new Player();
-                            stage.Player = p;
-                            stage.Objects.Add(p);
-                            break;
-                        }
+                        var p = new Player((float)obj["x"], (float)obj["y"]);
+                        stage.Player = p;
+                        stage.Objects.Add(p);
+                        break;
                     case "Gate":
-                        {
-                            var g = new Gate((float) obj["x"], (float) obj["y"]) {NextStage = (string) obj["code"]};
-                            stage.Gates.Add(g);
-                            stage.Objects.Add(g);
-                            break;
-                        }
+                        var g = new Gate((float)obj["x"], (float)obj["y"]) { NextStage = (string)obj["code"] };
+                        stage.Gates.Add(g);
+                        stage.Objects.Add(g);
+                        break;
 
                 }
             }
-            return stage;
-        }
-
-        /// <summary>
-        /// デモステージを作成する。
-        /// </summary>
-        public static Stage CreateDemoStage()
-        {
-            Stage stage = new Stage(CellNumX, CellNumY);
-            // マップの生成
-            for (int iy = 0; iy < CellNumY; iy++)
-            {
-                for (int ix = 0; ix < CellNumX; ix++)
-                {
-                    if (Map[iy, ix] == 1)
-                    {
-                        var block = new Block(CellSize * ix, CellSize * iy);
-                        stage.Objects.Add(block);
-                        stage.Blocks.Add(block);
-                    }
-                    if (Map[iy, ix] == 11)
-                    {
-                        var pblock = new EditableBlock(CellSize * ix, CellSize * iy);
-                        pblock.SetProcesses(new[] {
-                            new Process((obj, dt) => { } , 1.0f),
-
-                            new Process((obj, dt) => { obj.VY = -CellSize; }),
-                            new Process((obj, dt) => { obj.Move(dt); }, 3.0f),
-                            new Process((obj, dt) => { obj.VY = 0; }),
-                            new Process((obj, dt) => { } , 1.0f),
-
-                            new Process((obj, dt) => { obj.VY = +CellSize; }),
-                            new Process((obj, dt) => { obj.Move(dt); }, 3.0f),
-                            new Process((obj, dt) => { obj.VY = 0; }),
-
-                            new Process((obj, dt) => { obj.VX = +CellSize; }),
-                            new Process((obj, dt) => { obj.Move(dt); }, 3.0f),
-                            new Process((obj, dt) => { obj.VX = 0; }),
-
-                            new Process((obj, dt) => { obj.VX = -CellSize; }),
-                            new Process((obj, dt) => { obj.Move(dt); }, 3.0f),
-                            new Process((obj, dt) => { obj.VX = 0; }),
-
-                        });
-                        stage.Objects.Add(pblock);
-                        stage.Blocks.Add(pblock);
-                        stage.EditableObjects.Add(pblock);
-                    }
-                    if (Map[iy, ix] == 2)
-                    {
-                        var enemy = new Enemy(CellSize * ix, CellSize * iy);
-                        stage.Objects.Add(enemy);
-                        stage.Enemies.Add(enemy);
-                    }
-                    if (Map[iy, ix] == 21)
-                    {
-                        var enemy = new EditableEnemy(CellSize * ix, CellSize * iy);
-                        stage.Objects.Add(enemy);
-                        stage.Enemies.Add(enemy);
-                        stage.EditableObjects.Add(enemy);
-                    }
-                    if (Map[iy, ix] == 3)
-                    {
-                        var item = new Item(CellSize * ix + CellSize/4, CellSize * iy + CellSize/2, ItemEffects.Bigger);
-                        stage.Objects.Add(item);
-                        stage.Items.Add(item);
-                    }
-                }
-            }
-            var player = new Player();
-            stage.Player = player;
-            stage.Objects.Add(player);
-
-            var gate = new Gate(CellSize*15, CellSize*5);
-            gate.NextStage = "stage_1_1.json";
-            stage.Gates.Add(gate);
-            stage.Objects.Add(gate);
-
+            Debug.Assert(stage.Player != null, "stage の Player が null です。");
             return stage;
         }
 

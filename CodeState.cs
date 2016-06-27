@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -18,9 +16,6 @@ namespace HackTheWorld
         public int Cursor { get; set; }
         [JsonProperty("maxline", Order = 1)]
         public int MaxLine { get; set; }
-        [JsonProperty("name", Order = 2)]
-        [JsonConverter(typeof(StringEnumConverter))]
-        public Constants.ObjectType Name { get; set; }
         [JsonProperty("text", Order = 3)]
         public StringBuilder Text { get; set; }
         [JsonProperty("updatedAt", Order = 4)]
@@ -56,21 +51,21 @@ namespace HackTheWorld
         /// <summary>
         /// カーソルの位置と最大の行数を受け取って、CodeState を生成する。
         /// </summary>
-        public CodeState(int cursor, int maxLine, Constants.ObjectType type)
-        {
-            Cursor = cursor;
-            MaxLine = maxLine;
-            Name = type;
-            Text = new StringBuilder();
-            for (int i = 0; i < maxLine - 1; i++) Text.Append('\n');
-        }
-
         public CodeState(int cursor, int maxLine)
         {
             Cursor = cursor;
             MaxLine = maxLine;
             Text = new StringBuilder();
             for (int i = 0; i < maxLine - 1; i++) Text.Append('\n');
+        }
+
+        public void Save()
+        {
+            string json = JsonConvert.SerializeObject(this, Formatting.Indented);
+            if (!Directory.Exists(@".\code")) Directory.CreateDirectory(@".\code");
+            StreamWriter sw = new StreamWriter(@".\code\" + DateTime.Now.ToString("MMddHHmmss") + ".json", false, Encoding.GetEncoding("utf-8"));
+            sw.Write(json);
+            sw.Close();
         }
 
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using static HackTheWorld.Constants;
 
@@ -79,16 +75,16 @@ namespace HackTheWorld
                 switch (_cursor)
                 {
                     case 0:
-                        Scene.Push(new GameScene());
+                        Scene.Push(new GameScene(Stage.Load("stage_1_1.json")));
                         break;
                     case 1:
                         Scene.Push(new EditMapScene());
                         break;
                     case 2:
-                        Scene.Push(new EditScene());
+                        Scene.Push(new EditScene(Stage.Load("stage_1_1.json")));
                         break;
                     case 3:
-                        Scene.Push(new ProcessTestScene());
+                        Scene.Push(new EditScene(Stage.Load("stage_1_1.json")));
                         break;
                     case 4:
                         Application.Exit();

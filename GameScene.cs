@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Newtonsoft.Json;
 using static HackTheWorld.Constants;
 
 namespace HackTheWorld
@@ -20,7 +17,7 @@ namespace HackTheWorld
         private MenuItem _resetButton;
         private MenuItem _pauseButton;
         // ゲーム内変数宣言
-        private readonly Stage _stage;
+        private Stage _stage;
         private List<GameObject> _objects;
         private Player _player;
         private List<Block> _blocks;
@@ -30,11 +27,6 @@ namespace HackTheWorld
         private List<Item> _items;
         private List<Gate> _gates;
 
-        public GameScene()
-        {
-            _stage = Stage.CreateDemoStage();
-        }
-
         public GameScene(Stage stage)
         {
             _stage = stage;
@@ -42,8 +34,15 @@ namespace HackTheWorld
 
         public override void Cleanup()
         {
-//            _stage = null;
-//            _player = null;
+            _stage = null;
+            _objects = null;
+            _player = null;
+            _blocks = null;
+            _editableObjects = null;
+            _enemies = null;
+            _bullets = null;
+            _items = null;
+            _gates = null;
         }
 
         public override void Startup()
@@ -66,8 +65,7 @@ namespace HackTheWorld
 
             // CodeParser ができていないとeditableObjectsが機能しない。
             // shallow copy だとコンティニュー時に途中からスタートになる。
-             var s = _stage;
-//            var s = _stage.Replica; // CodeParser ができたらこちらに切り替える。
+            var s = _stage.Replica;
             _objects = s.Objects;
             _player = s.Player;
             _blocks = s.Blocks;
@@ -79,16 +77,8 @@ namespace HackTheWorld
 
             foreach (var o in _editableObjects)
             {
-                if (o.Processes == null || o.Processes.Count == 0)
-                {
-                    o.SetDemoProcesses(s);
-                    o.Execute();
-                }
-                else
-                {
-                    o.Compile(s);
-                    o.Execute();
-                }
+                o.Compile(s);
+                o.Execute();
             }
 
         }
@@ -104,34 +94,6 @@ namespace HackTheWorld
             }
             if (_resetButton.Clicked) Startup();
             if (_pauseButton.Clicked) Scene.Push(new PauseScene());
-            // セーブ・ロード
-            if (Input.Control.Pressed)
-            {
-                if (Input.R.Pushed)
-                {
-                    var stage = Stage.Load();
-                    _objects = stage.Objects;
-                    _player = stage.Player;
-                    _blocks = stage.Blocks;
-                    _editableObjects = stage.EditableObjects;
-                    _enemies = stage.Enemies;
-                    _items = stage.Items;
-                    _gates = stage.Gates;
-                }
-                if (Input.S.Pushed)
-                {
-                    var stage = new Stage {
-                        Objects = _objects,
-                        Player = _player,
-                        Blocks = _blocks,
-                        EditableObjects = _editableObjects,
-                        Enemies = _enemies,
-                        Items = _items,
-                        Gates = _gates
-                    };
-                    stage.Save(DateTime.Now.ToString("MMddHHmmss") + ".json");
-                }
-            }
 
             if (Input.Control.Pressed && Input.Shift.Pressed && Input.S.Pushed)
             {
@@ -182,7 +144,7 @@ namespace HackTheWorld
             {
                 if (_player.Intersects(g))
                 {
-                    Scene.Push(new EditScene(g.NextStage));
+                    Scene.Push(new EditScene(Stage.Load(g.NextStage)));
                 }
             }
 

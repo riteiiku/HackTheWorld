@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Drawing;//Image
+﻿using System.Drawing;
 using static HackTheWorld.Constants;
 
 namespace HackTheWorld
@@ -9,7 +6,7 @@ namespace HackTheWorld
     /// <summary>
     /// プレイヤー
     /// </summary>
-    public class Player : GameObject, IAnimatable
+    public sealed class Player : GameObject, IAnimatable
     {
         public int Speed = CellSize * 3;
         public int Jumpspeed = -CellSize * 11; // h=v^2/2g
@@ -17,12 +14,25 @@ namespace HackTheWorld
 
         public Player()
         {
+            Initialize();
+        }
+
+        public Player(float x, float y)
+        {
+            X = x;
+            Y = y;
+            Initialize();
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
             ObjectType = ObjectType.Player;
             Image img1 = Image.FromFile(@"image\masato1.jpg");
             Image img2 = Image.FromFile(@"image\masato2.jpg");
             Image img3 = Image.FromFile(@"image\masato3.jpg");
             Size = new Vector(CellSize * 7 / 10, CellSize * 9 / 10);
-            this.SetAnimation(new[] {img1, img2, img3}, new[] {0.5f, 1.0f, 1.5f});
+            this.SetAnimation(new[] { img1, img2, img3 }, new[] { 0.5f, 1.0f, 1.5f });
             Anim.Start();
         }
 
@@ -50,7 +60,7 @@ namespace HackTheWorld
         /// </summary>
         /// <param name="obj">渡されたオブジェクト。</param>
         /// <returns>乗っていたらtrue、乗っていなかったらfalseを返す。</returns>
-        public virtual bool StandOn(GameObject obj)
+        public bool StandOn(GameObject obj)
         {
             return MinX < obj.MaxX && MaxX > obj.MinX && (int)MaxY == (int)obj.MinY;
         }
@@ -60,16 +70,13 @@ namespace HackTheWorld
         /// </summary>
         /// <param name="obj">渡されたオブジェクト。</param>
         /// <returns>頭が当たっていたらtrue、当たっていなかったらfalseを返す。</returns>
-        public virtual bool HitHeadOn(GameObject obj)
+        public bool HitHeadOn(GameObject obj)
         {
             return MinX < obj.MaxX && MaxX > obj.MinX && (int)MinY == (int)obj.MaxY;
         }
 
         public override void Draw()
         {
-            if (!(Scene.Current is GameScene || Scene.Current is EditMapScene)) return;
-            //GraphicsContext.FillRectangle(Brushes.Aqua, X, Y, Width, Height);
-            //GraphicsContext.DrawRectangle(Pens.LightBlue, X, Y, Width, Height);
             if (IsAlive) Anim.Draw(VX > 0);
             else         GraphicsContext.FillRectangle(Brushes.Gray, X, Y, Width, Height);
         }
