@@ -42,7 +42,11 @@ namespace HackTheWorld
             if (_backButton.Clicked) Scene.Pop();
             if (_startButton.Clicked)
             {
-                Scene.Push(new EditScene(_mapEditor.GenerateStage()));
+                Scene.Push(new EditScene(_mapEditor.Generate
+                    
+                    
+                    
+                    ()));
             }
 
             if (Input.Control.Pressed && Input.S.Pushed) _mapEditor.GenerateStage().Save();

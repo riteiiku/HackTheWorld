@@ -120,7 +120,10 @@ namespace HackTheWorld
             self.CanExecute = true;
         }
 
-        public static void Compile(this IEditable self, Stage stage)
+        public static void Compile(this IEditable self, 
+            
+            
+            stage)
         {
             string str = self.Code.ToString();
             // ここにstring型をProcess型に変換する処理を書く。
