@@ -18,7 +18,8 @@ namespace HackTheWorld
         {
             if (!IsAlive) return;
             //GraphicsContext.FillRectangle(Brushes.HotPink, X, Y, Width, Height);
-            GraphicsContext.FillPie(Brushes.HotPink, X, Y, Width, Height, 0, 360);
+            GraphicsContext.FillPie(Brushes.Hot
+                , X, Y, Width, Height, 0, 360);
             GraphicsContext.DrawRectangle(Pens.Magenta, X, Y, Width, Height);
         }
     }

@@ -61,7 +61,7 @@ namespace HackTheWorld
                 Position = new Vector(125, 600)
             };
             _menuItem = new List<MenuItem> {_backButton, _resetButton, _pauseButton};
-            _bgImage = Image.FromFile(@"image\backscreen.bmp");
+            _bgImage = Image.FromFile(@"image\cyber1.jpg");
 
             // CodeParser ができていないとeditableObjectsが機能しない。
             // shallow copy だとコンティニュー時に途中からスタートになる。
