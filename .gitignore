@@ -11,7 +11,4 @@ doc/
 !App.config
 packages/
 *.stackdump
-stage/
-code.json
-code_.json
 code/
