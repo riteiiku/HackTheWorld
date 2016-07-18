@@ -80,6 +80,7 @@
     <Compile Include="IDrawable.cs" />
     <Compile Include="IEditable.cs" />
     <Compile Include="Item.cs" />
+    <Compile Include="JumpBlock.cs" />
     <Compile Include="MapEditor.cs" />
     <Compile Include="PauseScene.cs" />
     <Compile Include="CodeBox.cs" />

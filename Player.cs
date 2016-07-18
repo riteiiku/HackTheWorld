@@ -9,7 +9,7 @@ namespace HackTheWorld
     public sealed class Player : GameObject, IAnimatable
     {
         public int Speed = CellSize * 3;
-        public int Jumpspeed = -CellSize * 11; // h=v^2/2g
+        public int Jumpspeed = CellSize * 11; // h=v^2/2g
         public Animation Anim { get; set; }
 
         public Player()
@@ -41,7 +41,7 @@ namespace HackTheWorld
             if (Input.Left.Pressed)  VX = -Speed;
             if (Input.Right.Pressed) VX = Speed;
             if (Input.Left.Pressed == Input.Right.Pressed) VX = 0;
-            if (Input.Up.Pushed && OnGround) VY = Jumpspeed;
+            if (Input.Up.Pushed && OnGround) VY = -Jumpspeed;
             
             // 自動で動く部分
             if(!OnGround) VY += Gravity * dt;
