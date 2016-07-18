@@ -19,15 +19,15 @@ namespace HackTheWorld
         }
         public override void Startup()
         {
-            _continueButton = new MenuItem(Image.FromFile(@"image\continue.bmp"), Image.FromFile(@"image\continue1.bmp"))
+            _continueButton = new MenuItem(Image.FromFile(@"image\continue.png"), Image.FromFile(@"image\continue1.png"))
             {
-                Size = new Vector(400, 100),
+                Size = new Vector(400, 200),
                 Position = new Vector(400, 200)
             };
-            _closeButton = new MenuItem(Image.FromFile(@"image\close1.bmp"), Image.FromFile(@"image\close.bmp"))
+            _closeButton = new MenuItem(Image.FromFile(@"image\close1.png"), Image.FromFile(@"image\close.png"))
             {
-                Size = new Vector(400, 100),
-                Position = new Vector(400, 400)
+                Size = new Vector(400, 200),
+                Position = new Vector(400, 450)
             };
             _menuItem = new List<MenuItem> {_continueButton, _closeButton};
         }
