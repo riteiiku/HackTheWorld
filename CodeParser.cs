@@ -233,7 +233,7 @@ namespace HackTheWorld
             reg[12] = new Regex(@"end");
             reg[13] = new Regex(@"else");
             reg[14] = new Regex(@"break");
-            reg[15] = new Regex(@"ontop");
+            reg[15] = new Regex(@"player.ontop");
 
 
             Match[] mat = new Match[size];
@@ -407,14 +407,14 @@ namespace HackTheWorld
                     string result = "size," + mat.Groups["a"].Value + "," + mat.Groups["b"].Value;
                     sArray[i] = result;
                 }
-                if(Regex.IsMatch(s,@"^(ontop,|nearby,|touch,)*wait"))
+                if(Regex.IsMatch(s,@"^(player.ontop,|player.nearby,|player.touch,)*wait"))
                 {
                     Regex reg = new Regex(@"(?<head>\s*.*,*wait)\s*\(\s*(?<a>[\d|\.]+)\s*\)");
                     Match mat = reg.Match(s);
                     string result = mat.Groups["head"].Value + "," + mat.Groups["a"].Value;
                     sArray[i] = result;
                 }
-                if(Regex.IsMatch(s,@"^(ontop,|nearby,|touch,)*move"))
+                if(Regex.IsMatch(s,@"^(player.ontop,|player.nearby,|player.touch,)*move"))
                 {
 
                     Regex reg = new Regex(@"(?<head>\s*.*,*move)\s*\(\s*(?<a>[\-|\d|\.]+)\s*,\s*(?<b>[\-|\d|\.]+),\s*(?<c>[\d|\.]+)");
@@ -442,13 +442,13 @@ namespace HackTheWorld
             switch(i)
             {
                 case 0:
-                    prefix = "ontop,";
+                    prefix = "player.ontop,";
                     break;
                 case 1:
-                    prefix = "nearby,";
+                    prefix = "player.nearby,";
                     break;
                 case 2:
-                    prefix = "touch,";
+                    prefix = "player.touch,";
                     break;
             }
 
@@ -989,9 +989,9 @@ namespace HackTheWorld
 
             Regex[] reg = new Regex[3];
             Match[] mat = new Match[3];
-            reg[0] = new Regex(@"ontop");
-            reg[1] = new Regex(@"nearby");
-            reg[2] = new Regex(@"touch");
+            reg[0] = new Regex(@"player.ontop");
+            reg[1] = new Regex(@"player.nearby");
+            reg[2] = new Regex(@"player.touch");
             for(int i = 0;i < mat.Length;i++)
             {
                 mat[i] = reg[i].Match(s);
