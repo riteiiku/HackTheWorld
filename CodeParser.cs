@@ -34,28 +34,40 @@ namespace HackTheWorld
             }
 
             string strResult = "";
-            if(!isFunction(sArray))
+            try
             {
-                resultArray.Clear();
-                resultArray.Add("へんな書きかた");
+                if(!isFunction(sArray))
+                {
+                    resultArray.Clear();
+                    resultArray.Add("へんな書きかた");
+                    strResult = ConvertArrayToString(resultArray);
+                    Console.WriteLine(strResult);
+                    return resultArray;
+                }
+
+                if(!isValidScript(sArray))
+                {
+                    resultArray.Clear();
+                    resultArray.Add("構文エラー");
+                    strResult = ConvertArrayToString(resultArray);
+                    Console.WriteLine(strResult);
+                    return resultArray;
+                }
+
+                JumpToFunction(sArray,resultArray,hash);
+
                 strResult = ConvertArrayToString(resultArray);
                 Console.WriteLine(strResult);
-                return resultArray;
             }
-
-            if(!isValidScript(sArray))
+            catch
             {
-                resultArray.Clear();
-                resultArray.Add("構文エラー");
-                strResult = ConvertArrayToString(resultArray);
-                Console.WriteLine(strResult);
+                Console.WriteLine("どこかがうまくいってない");
+            }
+            if(LastCheck(strResult)){
                 return resultArray;
             }
-
-            JumpToFunction(sArray,resultArray,hash);
-
-            strResult = ConvertArrayToString(resultArray);
-            Console.WriteLine(strResult);
+            resultArray.Clear();
+            Console.WriteLine("最終チェックアウト");
             return resultArray;
 
         }
@@ -106,7 +118,7 @@ namespace HackTheWorld
         }
         #endregion
 
-        #region はじめのチェック
+        #region チェック
         public static bool isValidScript(ArrayList sArray)
         {
             //全体の関数(for,if,while)の数
@@ -255,6 +267,28 @@ namespace HackTheWorld
                 {
                     Console.WriteLine("知らない形の文が" + (i + 1) + "行目にあります");
                     return false;
+                }
+            }
+            return true;
+        }
+        static bool LastCheck(string s)
+        {
+            string[] sArray = s.Split('\n');
+            int size = 3;
+
+            Regex[] reg = new Regex[size];
+            Match[] mat = new Match[size];
+
+            reg[0] = new Regex(@"move,,,");
+            reg[1] = new Regex(@"size,,");
+            reg[2] = new Regex(@"wait,$");
+
+            for(int i = 0;i < sArray.Length;i++)
+            {
+                for(int j = 0;j < size;j++)
+                {
+                    mat[j] = reg[j].Match(sArray[i]);
+                    if(mat[j].Length != 0) return false;
                 }
             }
             return true;
@@ -1013,6 +1047,7 @@ namespace HackTheWorld
         {
             ArrayList tArray = new ArrayList();
             ArrayList uArray = new ArrayList();
+            int whileCounter = 0;
 
             //条件を抜き出す
             string s = (string)sArray[home];
@@ -1023,7 +1058,7 @@ namespace HackTheWorld
             //homeまで読んでhash登録、代入、forとendの対応の取り直し
             UpdateHash(sArray,home,hash);
 
-            while(!breakIsExists)
+            while(!breakIsExists&&whileCounter<100)
             {
                 //uArrayは条件式だけをいれるためにいる
                 //ループが回るたびに条件式を入れなおし、代入しなおす
@@ -1077,7 +1112,7 @@ namespace HackTheWorld
                             }
                         }
                     }
-
+                    whileCounter++;
                 }
                 else break;
             }
