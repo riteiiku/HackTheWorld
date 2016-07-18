@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HackTheWorld
+﻿namespace HackTheWorld
 {
     public class JumpBlock : Block
     {
@@ -19,7 +13,6 @@ namespace HackTheWorld
         {
             if (Intersects(_stage.Player))
             {
-                Console.WriteLine("pushed");
                 _stage.Player.VY = -15 * Constants.CellSize;
             }
         }

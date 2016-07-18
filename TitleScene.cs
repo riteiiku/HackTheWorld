@@ -81,10 +81,10 @@ namespace HackTheWorld
                         Scene.Push(new EditMapScene());
                         break;
                     case 2:
-                        Scene.Push(new EditScene(Stage.Load("stage_1_1.json")));
+                        Scene.Push(new EditScene(Stage.Load("stage1.json")));
                         break;
                     case 3:
-                        Scene.Push(new GameScene(Stage.Load("stage_1_1.json")));
+                        Scene.Push(new GameScene(Stage.Load("stage1.json")));
                         break;
                     case 4:
                         Application.Exit();
