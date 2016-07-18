@@ -135,7 +135,7 @@ namespace HackTheWorld
             {
                 bullet.Update(dt);
             }
-            foreach (var obj in _editableObjects)
+            foreach (var obj in _blocks)
             {
                 obj.Update(dt);
             }
