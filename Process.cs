@@ -1,9 +1,12 @@
-﻿namespace HackTheWorld
+﻿using System;
+
+namespace HackTheWorld
 {
     /// <summary>
     /// IEditable なオブジェクトに対する操作を保存する最小単位。
     /// </summary>
     public delegate void ExecuteWith(IEditable obj, float dt);
+    public delegate Func<bool> Trigger(IEditable obj);
 
     /// <summary>
     /// IEditable なオブジェクトの Processes に格納され、
@@ -23,6 +26,7 @@
         /// 実行するメソッド
         /// </summary>
         public ExecuteWith ExecuteWith { get; }
+        public Callback Callback { get; }
 
         /// <summary>
         /// 一度だけ実行するメソッドを格納する Process を生成する。
@@ -44,5 +48,34 @@
             ExecuteWith = executeWith;
         }
 
+        public Process(ExecuteWith executeWith, Callback callback)
+        {
+            MilliSeconds = 0;
+            ElapsedTime = 0;
+            ExecuteWith = executeWith;
+            Callback = callback;
+        }
+
+        public Process(ExecuteWith executeWith, float seconds, Callback callback)
+        {
+            MilliSeconds = seconds * 1000;
+            ElapsedTime = 0;
+            ExecuteWith = executeWith;
+            Callback = callback;
+        }
+
     }
+
+    public class Callback
+    {
+        public Trigger Trigger { get; }
+        public ExecuteWith ExecuteWith { get; }
+
+        public Callback(Trigger trigger, ExecuteWith executeWith)
+        {
+            Trigger = trigger;
+            ExecuteWith = executeWith;
+        }
+    }
+
 }

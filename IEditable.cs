@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System;
+using System.Diagnostics;
 using Newtonsoft.Json;
 using static HackTheWorld.Constants;
 
@@ -39,6 +40,7 @@ namespace HackTheWorld
         /// true のとき Update() で Process が実行されるようになる。
         /// </summary>
         bool CanExecute { get; set; }
+
         // GameObject 由来のプロパティ
         float X { get; set; }
         float Y { get; set; }
@@ -111,6 +113,13 @@ namespace HackTheWorld
             {
                 process.ExecuteWith(self, dt);
                 process.ElapsedTime += dt;
+                if (process.Callback != null)
+                {
+                    if (process.Callback.Trigger(self)())
+                    {
+                        process.Callback.ExecuteWith(self, dt);
+                    }
+                }
             }
             else if (self.ProcessPtr + 1 < self.Processes.Count)
             {
@@ -138,304 +147,152 @@ namespace HackTheWorld
             //以下のリストの中身("move, x, y")を小集合とする
 
             //動作テスト用配列
-            //var midcode = new List<string> { "size,1,1", "wait,1", "move,1,1,2" };
+            var procedure = new List<string> { "size,1,1", "wait,1", "move,1,1,2", "touch,jump" };
+//            var procedure = new List<string> { "wait,2", "touch,move,1,1,1", "ontop,jump", "nearby,shoot" };
 
             //本実行用配列
-            var midcode = new List<string>();
-            midcode = CodeParser.ConvertCodebox(str).Cast<string>().ToList();
-
-
+//            var procedure = CodeParser.ConvertCodebox(str).Cast<string>().ToList();
 
             //各小集合に対して、以下の分割処理を行う。
-            foreach (var elements in midcode)
+            foreach (var elements in procedure)
             {
                 //小集合を要素に分割して、要素数1-4程度の配列を作成
-                string[] tmp = elements.Split(',');
+                string[] commands = elements.Split(',');
 
-
-                #region 特殊な関数の場合の処理
-                //基本関数でなければ特殊処理
-                if (tmp[0] != "size" && tmp[0] != "wait" && tmp[0] != "move") //基本動作を例外として弾く
+                Callback callback;
+                switch (commands[0])
                 {
-                    //条件達成時に行われるべき動作を記述した配列ctmpを作る
-                    List<string> listtmp = new List<string>();
-                    listtmp.AddRange(tmp);
-                    listtmp.RemoveAt(0);
-                    string[] ctmp = listtmp.ToArray();
-
-                    //もともとの配列tmp[0]の最初の文字で分岐
-                    switch (tmp[0])
-                    {
-                        #region オブジェクトに当たった時の判定
-                        case "touch":
-
-                            switch (ctmp[0])
-                            {
-                                //プレイヤーが触れたら大きさを変更
-                                case "size":
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        if (obj.CollidesWith(stage.Player))
-                                        {
-                                            obj.W = CellSize * float.Parse(ctmp[1]);
-                                            obj.H = CellSize * float.Parse(ctmp[2]);
-                                        }
-                                    }));
-                                    break;
-
-                                //プレイヤーが触れたら待機
-                                //ProcessのMoveの秒数指定の仕様上たぶん使えないです
-                                case "wait":
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        obj.VX = 0.0f;
-                                        obj.VY = 0.0f;
-                                    }));
-                                    self.AddProcess(new Process((obj, dt) => { obj.Move(dt); }, float.Parse(ctmp[1])));
-                                    break;
-
-                                //プレイヤーが触れたら移動
-                                case "move":
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        obj.VX = CellSize * float.Parse(ctmp[1]);
-                                        obj.VY = -CellSize * float.Parse(ctmp[2]);
-                                    }));
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        if (obj.CollidesWith(stage.Player))
-                                            obj.Move(dt);
-                                    }, float.Parse(ctmp[3])));
-
-                                    //最後に速度をゼロに戻しておく
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        obj.VX = 0.0f;
-                                        obj.VY = 0.0f;
-                                    }));
-
-                                    break;
-
-                                default:
-                                    break;
-                            }
-
-                            break;
-                        #endregion
-
-                        #region オブジェクトに乗った時の判定
-                        case "ontop":
-
-
-                            //判定エリアにいるかどうかで処理するかを決める
-                            switch (ctmp[0])
-                            {
-                                //プレイヤーが触れたら大きさを変更
-                                case "size":
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        if (obj.StandOn(stage.Player))
-                                        {
-                                            obj.W = CellSize * float.Parse(ctmp[1]);
-                                            obj.H = CellSize * float.Parse(ctmp[2]);
-                                        }
-                                    }));
-                                    break;
-
-                                //プレイヤーが触れたら待機
-                                //ProcessのMoveの秒数指定の仕様上たぶん使えないです
-                                case "wait":
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        obj.VX = 0.0f;
-                                        obj.VY = 0.0f;
-                                    }));
-
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        if (obj.StandOn(stage.Player))
-                                        {
-                                            obj.Move(dt);
-
-                                        }
-                                    }, float.Parse(ctmp[1])));
-                                    break;
-
-                                //プレイヤーが触れたら移動
-                                case "move":
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        obj.VX = CellSize * float.Parse(ctmp[1]);
-                                        obj.VY = -CellSize * float.Parse(ctmp[2]);
-                                    }));
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        if (obj.StandOn(stage.Player))
-                                        {
-                                            obj.Move(dt);
-                                        }
-                                    }, float.Parse(ctmp[3])));
-
-                                    //最後に自身の速度をゼロに戻しておく
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        obj.VX = 0.0f;
-                                        obj.VY = 0.0f;
-                                    }));
-
-                                    break;
-
-                                case "jump":
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        if (obj.StandOn(stage.Player))
-                                            stage.Player.VY = -CellSize * float.Parse(ctmp[1]);
-                                    }));
-                                    break;
-
-
-                                default:
-                                    break;
-                            }
-
-                            break;
-                        #endregion
-
-                        #region オブジェクトに近づいた時の判定
-
-
-
-                        case "nearby":
-                            switch (ctmp[0])
-                            {
-                                //プレイヤーが近づいたら大きさを変更
-                                case "size":
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        if (obj.Nearby(stage.Player))
-                                        {
-                                            obj.W = CellSize * float.Parse(ctmp[1]);
-                                            obj.H = CellSize * float.Parse(ctmp[2]);
-                                        }
-                                    }));
-                                    break;
-
-                                //プレイヤーが近づいたら待機
-                                //ProcessのMoveの秒数指定の仕様上たぶん使えないです
-                                case "wait":
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        obj.VX = 0.0f;
-                                        obj.VY = 0.0f;
-                                    }));
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        if (obj.Nearby(stage.Player))
-                                        {
-                                            obj.Move(dt);
-                                        }
-                                    }, float.Parse(ctmp[1])));
-                                    break;
-
-                                //プレイヤーが近づいたら移動
-                                case "move":
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        obj.VX = CellSize * float.Parse(ctmp[1]);
-                                        obj.VY = -CellSize * float.Parse(ctmp[2]);
-                                    }));
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        if (obj.Nearby(stage.Player))
-                                            obj.Move(dt);
-                                    }, float.Parse(ctmp[3])));
-
-                                    //最後に自身の速度をゼロにしておく
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        obj.VX = 0.0f;
-                                        obj.VY = 0.0f;
-                                    }));
-
-                                    break;
-
-                                case "shoot":
-                                    self.AddProcess(new Process((obj, dt) =>
-                                    {
-                                        if (obj.Nearby(stage.Player))
-                                        {
-
-                                            //Bulletクラス追加
-                                            var b = new Bullet(self.X, self.MidY, -50, 0, 10, 10);
-                                            stage.Bullets.Add(b);
-                                            stage.Objects.Add(b);
-
-                                        }
-                                    }));
-
-                                    break;
-
-                                default:
-                                    break;
-                            }
-
-                            break;
-
-                        #endregion
-                        default:
-                            break;
-
-                    }
-                }
-                #endregion
-
-
-                #region 基本的な動作関数
-                switch (tmp[0])
-                {
-                    //大きさ
-                    case "size":
-                        self.AddProcess(new Process((obj, dt) =>
+                    case "touch":
+                        switch (commands[1])
                         {
-                            obj.W = CellSize * float.Parse(tmp[1]);
-                            obj.H = CellSize * float.Parse(tmp[2]);
-                        }));
-                        break;
+                            //プレイヤーが触れたら大きさを変更
+                            case "size":
+                                callback = new Callback(obj => () => obj.Intersects(stage.Player), 
+                                                       (obj, dt) => { self.Size = new Vector(float.Parse(commands[2]), float.Parse(commands[3]));
+                                });
+                                self.AddOnce(callback);
+                                break;
 
-                    //待機
+                            case "jump":
+                                callback = new Callback(obj => () => obj.HitHeadOn(stage.Player), (obj, dt) => { stage.Player.VY = -CellSize * 15; });
+                                self.AddOnce(callback);
+                                break;
+
+                            //プレイヤーが触れたら待機
+                            case "wait":
+                                self.AddWait(float.Parse(commands[2]));
+                                break;
+
+                            //プレイヤーが触れたら移動
+                            case "move":
+                                self.AddMove(float.Parse(commands[2]), float.Parse(commands[3]), float.Parse(commands[4]));
+                                break;
+                        }
+                        break;
+                    case "ontop":
+                        switch (commands[1])
+                        {
+                            case "jump":
+                                callback = new Callback(obj => () => obj.HitHeadOn(stage.Player), (obj, dt) => { stage.Player.VY = -CellSize * 15; });
+                                self.AddOnce(callback);
+                                break;
+                        }
+                        break;
+                    case "nearby":
+                        switch (commands[1])
+                        {
+                            case "jump":
+                                callback = new Callback(obj => () => obj.Nearby(stage.Player), (obj, dt) => { stage.Player.VY = -CellSize * 15; });
+                                self.AddOnce(callback);
+                                break;
+                            case "move":
+                                self.AddMove(float.Parse(commands[2]), float.Parse(commands[3]), float.Parse(commands[4]));
+                                break;
+                            case "shoot":
+                                callback = new Callback(obj => () => obj.Nearby(stage.Player), (obj, dt) =>
+                                {
+                                    var b = new Bullet(self.X, self.MidY, -50, 0, 10, 10);
+                                    stage.Bullets.Add(b);
+                                    stage.Objects.Add(b);
+                                });
+                                self.AddOnce(callback);
+                                break;
+                        }
+                        break;
                     case "wait":
-                        self.AddProcess(new Process((obj, dt) =>
-                        {
-                            obj.VX = 0.0f;
-                            obj.VY = 0.0f;
-                        }));
-                        self.AddProcess(new Process((obj, dt) => { obj.Move(dt); }, float.Parse(tmp[1])));
+                        self.AddWait(float.Parse(commands[1]));
                         break;
-
-                    //移動
                     case "move":
-                        self.AddProcess(new Process((obj, dt) =>
-                        {
-                            obj.VX = CellSize * float.Parse(tmp[1]);
-                            obj.VY = -CellSize * float.Parse(tmp[2]);
-                        }));
-                        self.AddProcess(new Process((obj, dt) => { obj.Move(dt); }, float.Parse(tmp[3])));
-                        self.AddProcess(new Process((obj, dt) =>
-                        {
-                            obj.VX = 0.0f;
-                            obj.VY = 0.0f;
-                        }));
-
+                        self.AddMove(float.Parse(commands[1]), float.Parse(commands[2]), float.Parse(commands[3]));
                         break;
 
-                    default:
-                        break;
                 }
-                #endregion
 
             }
-            #endregion
 
+            #endregion
+        }
+
+        public static void AddWait(this IEditable self, float sec)
+        {
+            self.AddProcess(new Process((obj, dt) =>
+            {
+                obj.VX = 0.0f;
+                obj.VY = 0.0f;
+            }));
+            self.AddProcess(new Process((obj, dt) => { obj.Move(dt); }, sec));
+        }
+
+        public static void AddMove(this IEditable self, float vx, float vy, float sec)
+        {
+            self.AddChangeVelocity(vx, vy);
+            self.AddProcess((obj, dt) => { obj.Move(dt); }, sec);
+            self.AddStop();
+        }
+
+        public static void AddOnce(this IEditable self, Callback callback)
+        {
+            self.AddProcess(new Process((obj, dt) => { }, callback));
+        }
+
+        public static void AddWait(this IEditable self, float sec, Callback callback)
+        {
+            self.AddStop();
+            self.AddProcess(new Process((obj, dt) => { obj.Move(dt); }, sec, callback));
+        }
+
+        public static void AddMove(this IEditable self, float vx, float vy, float sec, Callback callback)
+        {
+            self.AddChangeVelocity(vx, vy);
+            self.AddProcess(new Process((obj, dt) => { obj.Move(dt); }, sec, callback));
+            self.AddStop();
+        }
+
+        public static void AddStop(this IEditable self)
+        {
+            self.AddProcess(new Process((obj, dt) =>
+            {
+                obj.VX = 0.0f;
+                obj.VY = 0.0f;
+            }));
+        }
+
+        public static void AddChangeVelocity(this IEditable self, float vx, float vy)
+        {
+            self.AddProcess(new Process((obj, dt) =>
+            {
+                obj.VX = CellSize * vx;
+                obj.VY = -CellSize * vy;
+            }));
+        }
+
+        public static void AddChangeSize(this IEditable self, float width, float height)
+        {
+            self.AddProcess((obj, dt) =>
+            {
+                obj.W = CellSize * width;
+                obj.H = CellSize * height;
+            });
         }
 
     }
