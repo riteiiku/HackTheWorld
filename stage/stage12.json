@@ -3,6 +3,15 @@
   "cols": 10,
   "objects": [
     {
+      "type": "HackTheWorld.Player, HackTheWorld, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "x": 0.0,
+      "y": 0.0,
+      "vx": 0.0,
+      "vy": 0.0,
+      "width": 60.0,
+      "height": 60.0
+    },
+    {
       "type": "HackTheWorld.Block, HackTheWorld, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
       "x": 0.0,
       "y": 480.0,
