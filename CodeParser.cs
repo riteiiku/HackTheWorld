@@ -34,8 +34,8 @@ namespace HackTheWorld
             }
 
             string strResult = "";
-            try
-            {
+            //try
+            //{
                 if(!isFunction(sArray))
                 {
                     resultArray.Clear();
@@ -58,11 +58,11 @@ namespace HackTheWorld
 
                 strResult = ConvertArrayToString(resultArray);
                 Console.WriteLine(strResult);
-            }
-            catch
-            {
-                Console.WriteLine("どこかがうまくいってない");
-            }
+            //}
+            //catch
+            //{
+                //Console.WriteLine("どこかがうまくいってない");
+            //}
             if(LastCheck(strResult)){
                 return resultArray;
             }
@@ -400,26 +400,26 @@ namespace HackTheWorld
             for(int i = 0;i < sArray.Count;i++)
             {
                 string s = (string)sArray[i];
-                if(s.StartsWith(@"size"))
+                if(s.StartsWith("size"))
                 {
                     Regex reg = new Regex(@"\s*size\s*\(\s*(?<a>[\d|\.]+)\s*,\s*(?<b>[\d|\.]+)\)");
                     Match mat = reg.Match(s);
                     string result = "size," + mat.Groups["a"].Value + "," + mat.Groups["b"].Value;
                     sArray[i] = result;
                 }
-                if(s.StartsWith(@"wait"))
+                if(Regex.IsMatch(s,@"^(ontop,|nearby,|touch,)*wait"))
                 {
-                    Regex reg = new Regex(@"\s*wait\s*\(\s*(?<a>[\d|\.]+)\s*\)");
+                    Regex reg = new Regex(@"(?<head>\s*.*,*wait)\s*\(\s*(?<a>[\d|\.]+)\s*\)");
                     Match mat = reg.Match(s);
-                    string result = "wait," + mat.Groups["a"].Value;
+                    string result = mat.Groups["head"].Value + "," + mat.Groups["a"].Value;
                     sArray[i] = result;
                 }
-                if(s.StartsWith(@"move"))
+                if(Regex.IsMatch(s,@"^(ontop,|nearby,|touch,)*move"))
                 {
 
-                    Regex reg = new Regex(@"\s*move\s*\(\s*(?<a>[\-|\d|\.]+)\s*,\s*(?<b>[\-|\d|\.]+),\s*(?<c>[\d|\.]+)");
+                    Regex reg = new Regex(@"(?<head>\s*.*,*move)\s*\(\s*(?<a>[\-|\d|\.]+)\s*,\s*(?<b>[\-|\d|\.]+),\s*(?<c>[\d|\.]+)");
                     Match mat = reg.Match(s);
-                    string result = "move," + mat.Groups["a"].Value + "," + mat.Groups["b"].Value + "," + mat.Groups["c"].Value;
+                    string result = mat.Groups["head"].Value + "," + mat.Groups["a"].Value + "," + mat.Groups["b"].Value + "," + mat.Groups["c"].Value;
                     sArray[i] = result;
                 }
             }
@@ -435,6 +435,31 @@ namespace HackTheWorld
                 mat = reg.Match(s);
             }
             return s;
+        }
+        static void AddPrefix(ArrayList sArray,ArrayList result,int home,int i)
+        {
+            string prefix = "";
+            switch(i)
+            {
+                case 0:
+                    prefix = "ontop,";
+                    break;
+                case 1:
+                    prefix = "nearby,";
+                    break;
+                case 2:
+                    prefix = "touch,";
+                    break;
+            }
+
+            for(int j = home+1;j < EndOfFunction(sArray,home);j++)
+            {
+                string s = (string)sArray[j];
+                if(s.StartsWith("move")|| s.StartsWith("wait"))
+                {
+                    result.Add(s.Insert(0,prefix));
+                }
+            }
         }
         #endregion
 
@@ -959,9 +984,25 @@ namespace HackTheWorld
             //条件を抜き出してarraylistへ
             string s = (string)sArray[home];
 
-            Regex reg = new Regex(@"^if\((?<condition>.+)\)$");
-            Match m = reg.Match(s);
-            tArray.Add(m.Groups["condition"].Value);
+            Regex reg1 = new Regex(@"^if\((?<condition>.+)\)$");
+            Match m1 = reg1.Match(s);
+
+            Regex[] reg = new Regex[3];
+            Match[] mat = new Match[3];
+            reg[0] = new Regex(@"ontop");
+            reg[1] = new Regex(@"nearby");
+            reg[2] = new Regex(@"touch");
+            for(int i = 0;i < mat.Length;i++)
+            {
+                mat[i] = reg[i].Match(s);
+                if(mat[i].Length != 0)
+                {
+                    AddPrefix(sArray,result,home,i);
+                    return;
+                }
+            }
+
+            tArray.Add(m1.Groups["condition"].Value);
             AssignmentHashValue(tArray,0,hash);
             tArray[0] = SearchAndAssignment((string)tArray[0]);
 
