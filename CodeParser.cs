@@ -71,7 +71,76 @@ namespace HackTheWorld
             return resultArray;
 
         }
+        public static ArrayList ConvertCodebox2(string originStr,int maxMove,int maxSize,int maxWait)
+        {
 
+            Hashtable hash = new Hashtable();
+
+            ICollection valuecall = hash.Values;
+            //連続で入力してデバックしたい
+            hash.Clear();
+
+            //行で分割
+            //char[ ] delimiterChars = { ' ' , ':' , '\t' , '\n' };
+            char[] delimiterChars = { '\n' };
+
+            //分割した文を入れるリストと結果を入れるリスト
+            ArrayList sArray = new ArrayList();
+            ArrayList resultArray = new ArrayList();
+
+            string[] tmp = originStr.Split(delimiterChars);
+            for(int i = 0;i < tmp.Length;i++)
+            {
+                if(tmp[i] != "") sArray.Add(tmp[i]);
+            }
+
+            string strResult = "";
+            //try
+            //{
+            if(!isFunction(sArray))
+            {
+                resultArray.Clear();
+                resultArray.Add("へんな書きかた");
+                strResult = ConvertArrayToString(resultArray);
+                Console.WriteLine(strResult);
+                return resultArray;
+            }
+
+            if(!isValidScript(sArray))
+            {
+                resultArray.Clear();
+                resultArray.Add("構文エラー");
+                strResult = ConvertArrayToString(resultArray);
+                Console.WriteLine(strResult);
+                return resultArray;
+            }
+            if(OverLimitString(originStr,maxMove,maxSize,maxWait))
+            {
+                resultArray.Clear();
+                resultArray.Add("関数が多すぎる");
+                strResult = ConvertArrayToString(resultArray);
+                Console.WriteLine(strResult);
+                return resultArray;
+            }
+
+            JumpToFunction(sArray,resultArray,hash);
+
+            strResult = ConvertArrayToString(resultArray);
+            Console.WriteLine(strResult);
+            //}
+            //catch
+            //{
+            //Console.WriteLine("どこかがうまくいってない");
+            //}
+            if(LastCheck(strResult))
+            {
+                return resultArray;
+            }
+            resultArray.Clear();
+            Console.WriteLine("最終チェックアウト");
+            return resultArray;
+
+        }
         public static void JumpToFunction(ArrayList sArray,ArrayList resultArray,Hashtable hash)
         {
             for(int i = 0;i < sArray.Count;i++)
@@ -270,6 +339,20 @@ namespace HackTheWorld
                 }
             }
             return true;
+        }
+        static bool OverLimitString(string s,int maxMove,int maxSize,int maxWait)
+        {
+            Regex[] limited = new Regex[3];
+            limited[0] = new Regex(@"move");
+            limited[1] = new Regex(@"size");
+            limited[2] = new Regex(@"wait");
+            int[] count = new int[3];
+            for(int i = 0;i < 3;i++)
+            {
+                count[i] = limited[i].Matches(s).Count;
+            }
+            if(count[0] > maxMove || count[1] > maxSize || count[2] > maxWait) return true;
+            return false;
         }
         static bool LastCheck(string s)
         {
