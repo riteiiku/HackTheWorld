@@ -119,6 +119,13 @@ namespace HackTheWorld
                     stage.Objects.Add(b);
                     continue;
                 }
+                if (type == typeof(JumpBlock))
+                {
+                    JumpBlock b = new JumpBlock((float)obj["x"], (float)obj["y"], stage);
+                    stage.Blocks.Add(b);
+                    stage.Objects.Add(b);
+                    continue;
+                }
                 if (type == typeof(Enemy))
                 {
                     Enemy e = new Enemy((float)obj["x"], (float)obj["y"], (float)obj["vx"], (float)obj["vy"], (float)obj["width"], (float)obj["height"]);
