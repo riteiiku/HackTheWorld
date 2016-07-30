@@ -305,13 +305,7 @@ namespace HackTheWorld
             reg[12] = new Regex(@"end");
             reg[13] = new Regex(@"else");
             reg[14] = new Regex(@"break");
-<<<<<<< HEAD
-            reg[15] = new Regex(@"ontop");
-            reg[16] = new Regex(@"touch");
-            reg[17] = new Regex(@"nearby");
-=======
             reg[15] = new Regex(@"player.ontop");
->>>>>>> hibiki
 
 
             Match[] mat = new Match[size];
