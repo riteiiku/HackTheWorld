@@ -194,13 +194,8 @@ namespace HackTheWorld
         #region チェック
         static string RemoveSpace(string s)
         {
-            Regex reg = new Regex(@"\s");
-            Match mat = reg.Match(s);
-            while(mat.Length > 0)
-            {
-                s = reg.Replace(s,"",1);
-                mat = reg.Match(s);
-            }
+            string space = " ";
+            s = s.Replace(space,"");
             return s;
         }
         public static bool isValidScript(ArrayList sArray)
@@ -216,6 +211,7 @@ namespace HackTheWorld
             {
                 Console.WriteLine("関数とendの数が違う");
             }
+            if(countFunction == 0) return true;
             //初めのほうから順番に見ていく
             for(int i = 0;i < sArray.Count;i++)
             {
@@ -514,10 +510,10 @@ namespace HackTheWorld
                         switch(j)
                         {
                             case 0:
-                                rep = "0,-1,1";
+                                rep = "0,1,1";
                                 break;
                             case 1:
-                                rep = "0,1,1";
+                                rep = "0,-1,1";
                                 break;
                             case 2:
                                 rep = "-1,0,1";
