@@ -86,19 +86,15 @@ namespace HackTheWorld
         public override void Update(float dt)
         {
             // ゲーム外処理
-            if (Input.Control.Pressed && Input.W.Pushed) Application.Exit();
-            if (_backButton.Clicked || Input.X.Pushed || Input.Back.Pushed) Scene.Pop();
-            foreach (var button in _menuItem)
+            if (Input.Control.Pressed)
             {
-                button.IsSelected = button.Contains(Input.Mouse.Position);
+                if (Input.W.Pushed) Application.Exit();
+                if (Input.X.Pushed || Input.Back.Pushed) Scene.Pop();
             }
+
+            if (_backButton.Clicked) Scene.Pop();
             if (_resetButton.Clicked) Startup();
             if (_pauseButton.Clicked) Scene.Push(new PauseScene());
-
-            if (Input.Control.Pressed && Input.Shift.Pressed && Input.S.Pushed)
-            {
-
-            }
 
             if (_player == null) return;
 

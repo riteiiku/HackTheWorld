@@ -48,10 +48,6 @@ namespace HackTheWorld
 
         public override void Update(float dt)
         {
-            foreach (var button in _menuItem)
-            {
-                button.IsSelected = button.Contains(Input.Mouse.Position);
-            }
             if (_backButton.Clicked) Scene.Pop();
             if (_startButton.Clicked) Scene.Push(new GameScene(_stage));
             if (_runButton.Clicked)

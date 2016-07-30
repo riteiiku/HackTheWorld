@@ -35,20 +35,15 @@ namespace HackTheWorld
 
         public override void Update(float dt)
         {
-            foreach (var button in _menuItem)
-            {
-                button.IsSelected = button.Contains(Input.Mouse.Position);
-            }
             if (_backButton.Clicked) Scene.Pop();
-            if (_startButton.Clicked)
+            if (_startButton.Clicked) Scene.Push(new EditScene(_mapEditor.GenerateStage()));
+
+            if (Input.Control.Pressed)
             {
-                Scene.Push(new EditScene(_mapEditor.GenerateStage()));
+                if (Input.S.Pushed) _mapEditor.GenerateStage().Save();
+                if (Input.X.Pushed || Input.Back.Pushed) Scene.Pop();
+                if (Input.W.Pushed) Application.Exit();
             }
-
-            if (Input.Control.Pressed && Input.S.Pushed) _mapEditor.GenerateStage().Save();
-
-            if ((Input.X.Pushed || Input.Back.Pushed)) Scene.Pop();
-            if (Input.Control.Pressed && Input.W.Pushed) Application.Exit();
 
             _mapEditor.Update();
 
