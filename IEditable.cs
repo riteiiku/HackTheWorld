@@ -147,11 +147,11 @@ namespace HackTheWorld
             //以下のリストの中身("move, x, y")を小集合とする
 
             //動作テスト用配列
-            var procedure = new List<string> { "size,1,1", "wait,1", "move,1,1,2", "touch,jump" };
+//            var procedure = new List<string> { "size,1,1", "wait,1", "move,1,1,2", "touch,jump" };
 //            var procedure = new List<string> { "wait,2", "touch,move,1,1,1", "ontop,jump", "nearby,shoot" };
 
             //本実行用配列
-//            var procedure = CodeParser.ConvertCodebox(str).Cast<string>().ToList();
+            var procedure = CodeParser.ConvertCodebox(str).Cast<string>().ToList();
 
             //各小集合に対して、以下の分割処理を行う。
             foreach (var elements in procedure)
