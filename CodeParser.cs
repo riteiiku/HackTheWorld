@@ -34,6 +34,8 @@ namespace HackTheWorld
             }
 
             string strResult = "";
+            //try
+            //{
             if(!isFunction(sArray))
             {
                 resultArray.Clear();
@@ -51,15 +53,97 @@ namespace HackTheWorld
                 Console.WriteLine(strResult);
                 return resultArray;
             }
+            ConvertDirectionToNumbers(sArray);
 
             JumpToFunction(sArray,resultArray,hash);
 
             strResult = ConvertArrayToString(resultArray);
             Console.WriteLine(strResult);
+            //}
+            //catch
+            //{
+            //Console.WriteLine("どこかがうまくいってない");
+            //}
+            if(LastCheck(strResult))
+            {
+                return resultArray;
+            }
+            resultArray.Clear();
+            Console.WriteLine("最終チェックアウト");
             return resultArray;
 
         }
+        public static ArrayList ConvertCodebox2(string originStr,int maxMove,int maxSize,int maxWait)
+        {
 
+            Hashtable hash = new Hashtable();
+
+            ICollection valuecall = hash.Values;
+            //連続で入力してデバックしたい
+            hash.Clear();
+
+            //行で分割
+            //char[ ] delimiterChars = { ' ' , ':' , '\t' , '\n' };
+            char[] delimiterChars = { '\n' };
+
+            //分割した文を入れるリストと結果を入れるリスト
+            ArrayList sArray = new ArrayList();
+            ArrayList resultArray = new ArrayList();
+
+            string[] tmp = originStr.Split(delimiterChars);
+            for(int i = 0;i < tmp.Length;i++)
+            {
+                if(tmp[i] != "") sArray.Add(tmp[i]);
+            }
+
+            string strResult = "";
+            //try
+            //{
+            if(!isFunction(sArray))
+            {
+                resultArray.Clear();
+                resultArray.Add("へんな書きかた");
+                strResult = ConvertArrayToString(resultArray);
+                Console.WriteLine(strResult);
+                return resultArray;
+            }
+
+            if(!isValidScript(sArray))
+            {
+                resultArray.Clear();
+                resultArray.Add("構文エラー");
+                strResult = ConvertArrayToString(resultArray);
+                Console.WriteLine(strResult);
+                return resultArray;
+            }
+            if(OverLimitString(originStr,maxMove,maxSize,maxWait))
+            {
+                resultArray.Clear();
+                resultArray.Add("関数が多すぎる");
+                strResult = ConvertArrayToString(resultArray);
+                Console.WriteLine(strResult);
+                return resultArray;
+            }
+            ConvertDirectionToNumbers(sArray);
+
+            JumpToFunction(sArray,resultArray,hash);
+
+            strResult = ConvertArrayToString(resultArray);
+            Console.WriteLine(strResult);
+            //}
+            //catch
+            //{
+            //Console.WriteLine("どこかがうまくいってない");
+            //}
+            if(LastCheck(strResult))
+            {
+                return resultArray;
+            }
+            resultArray.Clear();
+            Console.WriteLine("最終チェックアウト");
+            return resultArray;
+
+        }
         public static void JumpToFunction(ArrayList sArray,ArrayList resultArray,Hashtable hash)
         {
             for(int i = 0;i < sArray.Count;i++)
@@ -106,7 +190,7 @@ namespace HackTheWorld
         }
         #endregion
 
-        #region はじめのチェック
+        #region チェック
         public static bool isValidScript(ArrayList sArray)
         {
             //全体の関数(for,if,while)の数
@@ -206,9 +290,9 @@ namespace HackTheWorld
             //意味ない言葉が混ざっていないか見たい
             //"size,1,1", "wait,1", "move,1,1,2"
             Regex[] reg = new Regex[size];
-            reg[0] = new Regex(@"\s*size\s*\(\s*[\w+|\+|\-|\*|\/]+\s*,\s*[\w+|\+|\-|\*|\/]+\)");
-            reg[1] = new Regex(@"\s*wait\s*\(\s*[\w+|\+|\-|\*|\/]+\)");
-            reg[2] = new Regex(@"\s*move\s*\(\s*[\w+|\+|\-|\*|\/]+\s*,\s*[\w+|\+|\-|\*|\/]+,\s*[\w+|\+|\-|\*|\/]+\)");
+            reg[0] = new Regex(@"\s*size\s*\(\s*[\w+|\+|\-|\*|\/|\.]+\s*,\s*[\w+|\+|\-|\*|\/|\.]+\)");
+            reg[1] = new Regex(@"\s*wait\s*\(\s*[\w+|\+|\-|\*|\/|\.]+\)");
+            reg[2] = new Regex(@"\s*move\s*\(\s*([\w+|\+|\-|\*|\/|\.]+\s*,\s*[\w+|\+|\-|\*|\/|\.]+,\s*[\w+|\+|\-|\*|\/|\.]+|\w+)\)");
             reg[3] = new Regex(@"\s*\w+\s*=\s*[\w+|\+|\-|\*|\/]+\s*");
             reg[4] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*=");
             reg[5] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\+");
@@ -221,9 +305,13 @@ namespace HackTheWorld
             reg[12] = new Regex(@"end");
             reg[13] = new Regex(@"else");
             reg[14] = new Regex(@"break");
+<<<<<<< HEAD
             reg[15] = new Regex(@"ontop");
             reg[16] = new Regex(@"touch");
             reg[17] = new Regex(@"nearby");
+=======
+            reg[15] = new Regex(@"player.ontop");
+>>>>>>> hibiki
 
 
             Match[] mat = new Match[size];
@@ -257,6 +345,42 @@ namespace HackTheWorld
                 {
                     Console.WriteLine("知らない形の文が" + (i + 1) + "行目にあります");
                     return false;
+                }
+            }
+            return true;
+        }
+        static bool OverLimitString(string s,int maxMove,int maxSize,int maxWait)
+        {
+            Regex[] limited = new Regex[3];
+            limited[0] = new Regex(@"move");
+            limited[1] = new Regex(@"size");
+            limited[2] = new Regex(@"wait");
+            int[] count = new int[3];
+            for(int i = 0;i < 3;i++)
+            {
+                count[i] = limited[i].Matches(s).Count;
+            }
+            if(count[0] > maxMove || count[1] > maxSize || count[2] > maxWait) return true;
+            return false;
+        }
+        static bool LastCheck(string s)
+        {
+            string[] sArray = s.Split('\n');
+            int size = 3;
+
+            Regex[] reg = new Regex[size];
+            Match[] mat = new Match[size];
+
+            reg[0] = new Regex(@"move,,,");
+            reg[1] = new Regex(@"size,,");
+            reg[2] = new Regex(@"wait,$");
+
+            for(int i = 0;i < sArray.Length;i++)
+            {
+                for(int j = 0;j < size;j++)
+                {
+                    mat[j] = reg[j].Match(sArray[i]);
+                    if(mat[j].Length != 0) return false;
                 }
             }
             return true;
@@ -363,30 +487,71 @@ namespace HackTheWorld
             }
             return tArray;
         }
+        static void ConvertDirectionToNumbers(ArrayList sArray)
+        {
+            Regex[] reg = new Regex[4];
+            reg[0] = new Regex(@"up");
+            reg[1] = new Regex(@"down");
+            reg[2] = new Regex(@"left");
+            reg[3] = new Regex(@"right");
+
+            Match[] mat = new Match[4];
+            for(int i = 0;i < sArray.Count;i++)
+            {
+                string s = sArray[i].ToString();
+                for(int j = 0;j < 4;j++)
+                {
+                    mat[j] = reg[j].Match(s);
+                    while(mat[j].Length > 0)
+                    {
+                        string rep = "";
+                        switch(j)
+                        {
+                            case 0:
+                                rep = "0,-1,1";
+                                break;
+                            case 1:
+                                rep = "0,1,1";
+                                break;
+                            case 2:
+                                rep = "-1,0,1";
+                                break;
+                            case 3:
+                                rep = "1,0,1";
+                                break;
+                        }
+                        s = reg[j].Replace(s,rep,1);
+                        mat[j] = reg[j].Match(s);
+                    }
+                }
+                sArray[i] = s;
+            }
+        }
         static void ConvertForYokouchi(ArrayList sArray)
         {
             for(int i = 0;i < sArray.Count;i++)
             {
                 string s = (string)sArray[i];
-                if(s.StartsWith(@"size"))
+                if(s.StartsWith("size"))
                 {
                     Regex reg = new Regex(@"\s*size\s*\(\s*(?<a>[\d|\.]+)\s*,\s*(?<b>[\d|\.]+)\)");
                     Match mat = reg.Match(s);
                     string result = "size," + mat.Groups["a"].Value + "," + mat.Groups["b"].Value;
                     sArray[i] = result;
                 }
-                if(s.StartsWith(@"wait"))
+                if(Regex.IsMatch(s,@"^(player.ontop,|player.nearby,|player.touch,)*wait"))
                 {
-                    Regex reg = new Regex(@"\s*wait\s*\(\s*(?<a>[\d|\.]+)\s*\)");
+                    Regex reg = new Regex(@"(?<head>\s*.*,*wait)\s*\(\s*(?<a>[\d|\.]+)\s*\)");
                     Match mat = reg.Match(s);
-                    string result = "wait," + mat.Groups["a"].Value;
+                    string result = mat.Groups["head"].Value + "," + mat.Groups["a"].Value;
                     sArray[i] = result;
                 }
-                if(s.StartsWith(@"move"))
+                if(Regex.IsMatch(s,@"^(player.ontop,|player.nearby,|player.touch,)*move"))
                 {
-                    Regex reg = new Regex(@"\s*move\s*\(\s*(?<a>[\-|\d|\.]+)\s*,\s*(?<b>[\-|\d|\.]+),\s*(?<c>[\d|\.]+)");
+
+                    Regex reg = new Regex(@"(?<head>\s*.*,*move)\s*\(\s*(?<a>[\-|\d|\.]+)\s*,\s*(?<b>[\-|\d|\.]+),\s*(?<c>[\d|\.]+)");
                     Match mat = reg.Match(s);
-                    string result = "move," + mat.Groups["a"].Value + "," + mat.Groups["b"].Value + "," + mat.Groups["c"].Value;
+                    string result = mat.Groups["head"].Value + "," + mat.Groups["a"].Value + "," + mat.Groups["b"].Value + "," + mat.Groups["c"].Value;
                     sArray[i] = result;
                 }
             }
@@ -402,6 +567,31 @@ namespace HackTheWorld
                 mat = reg.Match(s);
             }
             return s;
+        }
+        static void AddPrefix(ArrayList sArray,ArrayList result,int home,int i)
+        {
+            string prefix = "";
+            switch(i)
+            {
+                case 0:
+                    prefix = "player.ontop,";
+                    break;
+                case 1:
+                    prefix = "player.nearby,";
+                    break;
+                case 2:
+                    prefix = "player.touch,";
+                    break;
+            }
+
+            for(int j = home + 1;j < EndOfFunction(sArray,home);j++)
+            {
+                string s = (string)sArray[j];
+                if(s.StartsWith("move") || s.StartsWith("wait"))
+                {
+                    result.Add(s.Insert(0,prefix));
+                }
+            }
         }
         #endregion
 
@@ -652,7 +842,7 @@ namespace HackTheWorld
                 if(nextIndex < input.Length)
                 {
                     //次の位置を探す
-                    
+
                     Regex blanc = new Regex(@"\s");
                     Match matchBlanc = blanc.Match(input,nextIndex);
                     stepforward = matchBlanc.Index;
@@ -926,9 +1116,25 @@ namespace HackTheWorld
             //条件を抜き出してarraylistへ
             string s = (string)sArray[home];
 
-            Regex reg = new Regex(@"^if\((?<condition>.+)\)$");
-            Match m = reg.Match(s);
-            tArray.Add(m.Groups["condition"].Value);
+            Regex reg1 = new Regex(@"^if\((?<condition>.+)\)$");
+            Match m1 = reg1.Match(s);
+
+            Regex[] reg = new Regex[3];
+            Match[] mat = new Match[3];
+            reg[0] = new Regex(@"player.ontop");
+            reg[1] = new Regex(@"player.nearby");
+            reg[2] = new Regex(@"player.touch");
+            for(int i = 0;i < mat.Length;i++)
+            {
+                mat[i] = reg[i].Match(s);
+                if(mat[i].Length != 0)
+                {
+                    AddPrefix(sArray,result,home,i);
+                    return;
+                }
+            }
+
+            tArray.Add(m1.Groups["condition"].Value);
             AssignmentHashValue(tArray,0,hash);
             tArray[0] = SearchAndAssignment((string)tArray[0]);
 
@@ -1014,6 +1220,7 @@ namespace HackTheWorld
         {
             ArrayList tArray = new ArrayList();
             ArrayList uArray = new ArrayList();
+            int whileCounter = 0;
 
             //条件を抜き出す
             string s = (string)sArray[home];
@@ -1024,7 +1231,7 @@ namespace HackTheWorld
             //homeまで読んでhash登録、代入、forとendの対応の取り直し
             UpdateHash(sArray,home,hash);
 
-            while(!breakIsExists)
+            while(!breakIsExists && whileCounter < 100)
             {
                 //uArrayは条件式だけをいれるためにいる
                 //ループが回るたびに条件式を入れなおし、代入しなおす
@@ -1078,7 +1285,7 @@ namespace HackTheWorld
                             }
                         }
                     }
-
+                    whileCounter++;
                 }
                 else break;
             }
