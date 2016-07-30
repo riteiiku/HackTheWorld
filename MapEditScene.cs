@@ -5,7 +5,7 @@ using static HackTheWorld.Constants;
 
 namespace HackTheWorld
 {
-    class EditMapScene : Scene
+    class MapEditScene : Scene
     {
         private MenuItem _backButton;
         private MenuItem _startButton;
