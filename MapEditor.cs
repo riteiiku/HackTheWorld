@@ -93,6 +93,13 @@ namespace HackTheWorld
                         s.Objects.Add(b);
                         continue;
                     }
+                    if (type == typeof(JumpBlock))
+                    {
+                        JumpBlock b = new JumpBlock(CellSize * i, CellSize * j, s);
+                        s.Blocks.Add(b);
+                        s.Objects.Add(b);
+                        continue;
+                    }
                     if (type == typeof(Enemy))
                     {
                         Enemy e = new Enemy(CellSize * i, CellSize * j);

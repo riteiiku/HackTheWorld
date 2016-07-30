@@ -10,7 +10,7 @@ namespace HackTheWorld
     class MenuItem : GameObject
     {
         private readonly Image[] _images;
-        public bool IsSelected { get; set; } = false;
+        public bool IsSelected => Contains(Input.Mouse.Position);
 
         public MenuItem(Image defaultImage, Image selectedImage)
         {
