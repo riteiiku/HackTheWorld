@@ -7,10 +7,8 @@ namespace HackTheWorld
 {
     class StageSelectScene : Scene
     {
-        private Font _font;
         private string[] _files;
         private Image _title;
-        private Image[] _stageImages;
         private MenuItem[] _menuItems;
         
         public override void Cleanup()
@@ -19,7 +17,6 @@ namespace HackTheWorld
 
         public override void Startup()
         {
-            _stageImages = new Image[8];
             _menuItems = new MenuItem[8];
 
             for (int i = 0; i < 8; i++)
@@ -31,7 +28,6 @@ namespace HackTheWorld
                 };
             }
 
-            _font = new Font("Courier New", 12);
             _files = Directory.GetFiles(@".\stage\", "*.json", SearchOption.TopDirectoryOnly);
             _title = Image.FromFile(@"image\stageSelect.png");
         }
