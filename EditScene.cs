@@ -83,7 +83,7 @@ namespace HackTheWorld
             GraphicsContext.DrawRectangle(Pens.LightGray, CellNumX * CellSize, 280, 100, 20);
             Font font = new Font("Courier New", 12);
             GraphicsContext.DrawString("プログラム", font, Brushes.DarkSlateGray, CellNumX * CellSize, 3);
-            GraphicsContext.DrawString("実行結果", font, Brushes.WhiteSmoke, CellNumX * CellSize, 283);
+            GraphicsContext.DrawString("けっか", font, Brushes.WhiteSmoke, CellNumX * CellSize, 283);
 
 
             _codebox.Draw();

@@ -10,7 +10,7 @@ namespace HackTheWorld
 {
     public class ConsoleBox : TextArea
     {
-        public ConsoleBox() : base("abcde") { }
+        public ConsoleBox() : base("") { }
         public ConsoleBox(string str) : base(str) { }
 
         public void WriteLines(string str)
