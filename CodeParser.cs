@@ -295,7 +295,7 @@ namespace HackTheWorld
             List<Regex> reg = new List<Regex>();
             reg.Add(new Regex(@"\s*size\s*\(\s*[\w+|\+|\-|\*|\/|\.]+\s*,\s*[\w+|\+|\-|\*|\/|\.]+\)"));
             reg.Add(new Regex(@"\s*wait\s*\(\s*[\w+|\+|\-|\*|\/|\.]+\)"));
-            reg.Add(new Regex(@"\s*move\(\w+\)"));
+            reg.Add(new Regex(@"\s*move\([\w+|\+|\-|\*|\/|\.]+\)"));
             reg.Add(new Regex(@"\s*\w+\s*=\s*[\w+|\+|\-|\*|\/]+\s*"));
             reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*="));
             reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\+"));
@@ -535,7 +535,7 @@ namespace HackTheWorld
                     Match mat = reg.Match(s);
                     string result = mat.Groups["head"].Value + ",";
 
-                    switch(Convert.ToUInt32(mat.Groups["a"].Value))
+                    switch(Convert.ToUInt32(mat.Groups["a"].Value)%4)
                     {
                         //0123→右下左上
                         case 0:
