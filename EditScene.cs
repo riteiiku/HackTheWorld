@@ -13,7 +13,6 @@ namespace HackTheWorld
         private MenuItem _backButton;
         private MenuItem _startButton;
         private MenuItem _runButton;
-        private List<MenuItem> _menuItem;
         private Stage _stage;
         private readonly CodeBox _codebox;
 
@@ -43,7 +42,6 @@ namespace HackTheWorld
                 Size = new Vector(75 , 75) ,
                 Position = new Vector(125 , 500)
             };
-            _menuItem = new List<MenuItem> {_backButton, _startButton,_runButton};
         }
 
         public override void Update(float dt)
