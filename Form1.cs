@@ -40,8 +40,9 @@ namespace HackTheWorld
         private void MainProcess()
         {
             _bmp = new Bitmap(ScreenWidth, ScreenHeight);
+            _bmp.SetResolution(96, 96);
             GraphicsContext = Graphics.FromImage(_bmp);
-            GraphicsContext.PageUnit = GraphicsUnit.Pixel;
+//            GraphicsContext.PageUnit = GraphicsUnit.Pixel;
 
             _pressedKeys = new LinkedList<Keys>();
             _pressedButtons = new LinkedList<MouseButtons>();
