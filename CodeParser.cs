@@ -8,6 +8,7 @@ namespace HackTheWorld
 {
     public static class CodeParser
     {
+
         //つらを
         #region メイン
         public static ArrayList ConvertCodebox(string originStr)
@@ -293,22 +294,22 @@ namespace HackTheWorld
             //意味ない言葉が混ざっていないか見たい
             //"size,1,1", "wait,1", "move,1,1,2"
             List<Regex> reg = new List<Regex>();
-            reg.Add(new Regex(@"\s*size\s*\(\s*[\w+|\+|\-|\*|\/|\.]+\s*,\s*[\w+|\+|\-|\*|\/|\.]+\)"));
-            reg.Add(new Regex(@"\s*wait\s*\(\s*[\w+|\+|\-|\*|\/|\.]+\)"));
-            reg.Add(new Regex(@"\s*move\([\w+|\+|\-|\*|\/|\.]+\)"));
-            reg.Add(new Regex(@"\s*\w+\s*=\s*[\w+|\+|\-|\*|\/]+\s*"));
+            reg.Add(new Regex(@"\s*size\s*\(\s*[\w+|\+|\-|\*|\/|\.|\%]+\s*,\s*[\w+|\+|\-|\*|\/|\.|\%]+\)"));
+            reg.Add(new Regex(@"\s*wait\s*\(\s*[\w+|\+|\-|\*|\/|\.|\%]+\)"));
+            reg.Add(new Regex(@"\s*move\([\w+|\+|\-|\*|\/|\.|\%]+\)"));
+            reg.Add(new Regex(@"\s*\w+\s*=\s*[\w+|\+|\-|\*|\/|\%]+\s*"));
             reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*="));
             reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\+"));
             reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*\-\-"));
             reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\="));
             reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*\-\="));
             reg.Add(new Regex(@"for"));
-            reg.Add( new Regex(@"if"));
-            reg.Add( new Regex(@"while"));
-            reg.Add( new Regex(@"end"));
-            reg.Add( new Regex(@"else"));
-            reg.Add( new Regex(@"break"));
-            reg.Add( new Regex(@"player.ontop"));
+            reg.Add(new Regex(@"if"));
+            reg.Add(new Regex(@"while"));
+            reg.Add(new Regex(@"end"));
+            reg.Add(new Regex(@"else"));
+            reg.Add(new Regex(@"break"));
+            reg.Add(new Regex(@"player.ontop"));
 
 
             Match[] mat = new Match[reg.Count];
