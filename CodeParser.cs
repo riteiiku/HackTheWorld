@@ -13,11 +13,7 @@ namespace HackTheWorld
         public static ArrayList ConvertCodebox(string originStr)
         {
             originStr = RemoveSpace(originStr);
-            Hashtable hash = new Hashtable();
-
-            ICollection valuecall = hash.Values;
-            //連続で入力してデバックしたい
-            hash.Clear();
+            
 
             //行で分割
             //char[ ] delimiterChars = { ' ' , ':' , '\t' , '\n' };
@@ -55,7 +51,7 @@ namespace HackTheWorld
             }
             ConvertDirectionToNumbers(sArray);
 
-            JumpToFunction(sArray,resultArray,hash);
+            JumpToFunction(sArray,resultArray);
 
             strResult = ConvertArrayToString(resultArray);
             Console.WriteLine(strResult);
@@ -73,15 +69,9 @@ namespace HackTheWorld
             return resultArray;
 
         }
-        public static ArrayList ConvertCodebox2(string originStr,int maxMove,int maxSize,int maxWait)
+        public static ArrayList ConvertCodebox(string originStr,int maxMove,int maxSize,int maxWait)
         {
             originStr = RemoveSpace(originStr);
-
-            Hashtable hash = new Hashtable();
-
-            ICollection valuecall = hash.Values;
-            //連続で入力してデバックしたい
-            hash.Clear();
 
             //行で分割
             //char[ ] delimiterChars = { ' ' , ':' , '\t' , '\n' };
@@ -127,7 +117,7 @@ namespace HackTheWorld
             }
             ConvertDirectionToNumbers(sArray);
 
-            JumpToFunction(sArray,resultArray,hash);
+            JumpToFunction(sArray,resultArray);
 
             strResult = ConvertArrayToString(resultArray);
             Console.WriteLine(strResult);
@@ -145,8 +135,13 @@ namespace HackTheWorld
             return resultArray;
 
         }
-        public static void JumpToFunction(ArrayList sArray,ArrayList resultArray,Hashtable hash)
+        public static void JumpToFunction(ArrayList sArray,ArrayList resultArray)
         {
+            Hashtable hash = new Hashtable();
+
+            ICollection valuecall = hash.Values;
+            //連続で入力してデバックしたい
+            hash.Clear();
             for(int i = 0;i < sArray.Count;i++)
             {
                 //i行目が関数で始まってるかどうか
@@ -294,36 +289,36 @@ namespace HackTheWorld
             string msg = "";
             string s = "";
             int count = 0;
-            int size = 16;
+
             //意味ない言葉が混ざっていないか見たい
             //"size,1,1", "wait,1", "move,1,1,2"
-            Regex[] reg = new Regex[size];
-            reg[0] = new Regex(@"\s*size\s*\(\s*[\w+|\+|\-|\*|\/|\.]+\s*,\s*[\w+|\+|\-|\*|\/|\.]+\)");
-            reg[1] = new Regex(@"\s*wait\s*\(\s*[\w+|\+|\-|\*|\/|\.]+\)");
-            reg[2] = new Regex(@"\s*move\s*\(\s*([\w+|\+|\-|\*|\/|\.]+\s*,\s*[\w+|\+|\-|\*|\/|\.]+,\s*[\w+|\+|\-|\*|\/|\.]+|\w+)\)");
-            reg[3] = new Regex(@"\s*\w+\s*=\s*[\w+|\+|\-|\*|\/]+\s*");
-            reg[4] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*=");
-            reg[5] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\+");
-            reg[6] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\-\-");
-            reg[7] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\=");
-            reg[8] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\-\=");
-            reg[9] = new Regex(@"for");
-            reg[10] = new Regex(@"if");
-            reg[11] = new Regex(@"while");
-            reg[12] = new Regex(@"end");
-            reg[13] = new Regex(@"else");
-            reg[14] = new Regex(@"break");
-            reg[15] = new Regex(@"player.ontop");
+            List<Regex> reg = new List<Regex>();
+            reg.Add(new Regex(@"\s*size\s*\(\s*[\w+|\+|\-|\*|\/|\.]+\s*,\s*[\w+|\+|\-|\*|\/|\.]+\)"));
+            reg.Add(new Regex(@"\s*wait\s*\(\s*[\w+|\+|\-|\*|\/|\.]+\)"));
+            reg.Add(new Regex(@"\s*move\(\w+\)"));
+            reg.Add(new Regex(@"\s*\w+\s*=\s*[\w+|\+|\-|\*|\/]+\s*"));
+            reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*="));
+            reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\+"));
+            reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*\-\-"));
+            reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\="));
+            reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*\-\="));
+            reg.Add(new Regex(@"for"));
+            reg.Add( new Regex(@"if"));
+            reg.Add( new Regex(@"while"));
+            reg.Add( new Regex(@"end"));
+            reg.Add( new Regex(@"else"));
+            reg.Add( new Regex(@"break"));
+            reg.Add( new Regex(@"player.ontop"));
 
 
-            Match[] mat = new Match[size];
+            Match[] mat = new Match[reg.Count];
 
             for(int i = 0;i < sArray.Count;i++)
             {
                 count = 0;
                 s = sArray[i].ToString();
                 //matchの配列の初期化
-                for(int j = 0;j < size;j++)
+                for(int j = 0;j < reg.Count;j++)
                 {
                     mat[j] = reg[j].Match(s);
                 }
@@ -337,7 +332,7 @@ namespace HackTheWorld
                     Console.WriteLine(msg + "の書き方がまちがってます");
                     return false;
                 }
-                for(int j = 0;j < size;j++)
+                for(int j = 0;j < reg.Count;j++)
                 {
                     if(mat[j].Length != 0) count++;
                 }
@@ -492,10 +487,10 @@ namespace HackTheWorld
         static void ConvertDirectionToNumbers(ArrayList sArray)
         {
             Regex[] reg = new Regex[4];
-            reg[0] = new Regex(@"up");
+            reg[0] = new Regex(@"right"); 
             reg[1] = new Regex(@"down");
             reg[2] = new Regex(@"left");
-            reg[3] = new Regex(@"right");
+            reg[3] = new Regex(@"up");
 
             Match[] mat = new Match[4];
             for(int i = 0;i < sArray.Count;i++)
@@ -506,29 +501,14 @@ namespace HackTheWorld
                     mat[j] = reg[j].Match(s);
                     while(mat[j].Length > 0)
                     {
-                        string rep = "";
-                        switch(j)
-                        {
-                            case 0:
-                                rep = "0,1,1";
-                                break;
-                            case 1:
-                                rep = "0,-1,1";
-                                break;
-                            case 2:
-                                rep = "-1,0,1";
-                                break;
-                            case 3:
-                                rep = "1,0,1";
-                                break;
-                        }
-                        s = reg[j].Replace(s,rep,1);
+                        s = reg[j].Replace(s,j.ToString(),1);
                         mat[j] = reg[j].Match(s);
                     }
                 }
                 sArray[i] = s;
             }
         }
+
         static void ConvertForYokouchi(ArrayList sArray)
         {
             for(int i = 0;i < sArray.Count;i++)
@@ -551,9 +531,26 @@ namespace HackTheWorld
                 if(Regex.IsMatch(s,@"^(player.ontop,|player.nearby,|player.touch,)*move"))
                 {
 
-                    Regex reg = new Regex(@"(?<head>\s*.*,*move)\s*\(\s*(?<a>[\-|\d|\.]+)\s*,\s*(?<b>[\-|\d|\.]+),\s*(?<c>[\d|\.]+)");
+                    Regex reg = new Regex(@"(?<head>\s*.*,*move)\s*\(\s*(?<a>[\-|\d|\.]+)");
                     Match mat = reg.Match(s);
-                    string result = mat.Groups["head"].Value + "," + mat.Groups["a"].Value + "," + mat.Groups["b"].Value + "," + mat.Groups["c"].Value;
+                    string result = mat.Groups["head"].Value + ",";
+
+                    switch(Convert.ToUInt32(mat.Groups["a"].Value))
+                    {
+                        //0123→右下左上
+                        case 0:
+                            result += "1,0,1";
+                            break;
+                        case 1:
+                            result += "0,-1,1";
+                            break;
+                        case 2:
+                            result += "-1,0,1";
+                            break;
+                        case 3:
+                            result += "0,1,1";
+                            break;
+                    }
                     sArray[i] = result;
                 }
             }
@@ -762,7 +759,7 @@ namespace HackTheWorld
             Match equalsMatch = equals.Match(input);
 
             Regex[] regSeparate = new Regex[5];
-            regSeparate[0] = new Regex(@"\s*(?<name>\w+)\s*=\s*(?<right_hand>[(?<value>\w+)|\+|\-|\*|\/|\.]+)\s*");
+            regSeparate[0] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*=\s*(?<right_hand>[(?<value>\w+)|\+|\-|\*|\/|\.]+)\s*");
             regSeparate[1] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\+");
             regSeparate[2] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\-\-");
             regSeparate[3] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\=\s*(?<value>\d+)");
@@ -777,6 +774,7 @@ namespace HackTheWorld
                     Regex reg = new Regex(@"(?<name>\w+)\s*=\s*(?<right_hand>[\d|\w|\+|\-|\*|\/|\.]+)");
                     Match mat = reg.Match(input,stepforward);
                     str1 = mat.Groups["right_hand"].Value;
+                    
 
                     foreach(string k in keycall)
                     {
@@ -805,6 +803,10 @@ namespace HackTheWorld
 
                     //hashへの登録
                     str3 = mat.Groups["name"].Value;
+                    if(str3=="right"|| str3 == "down"||str3 == "left"||str3 == "up")
+                    {
+                        return;
+                    }
                     hash[str3] = str2;
 
                 }
@@ -814,6 +816,10 @@ namespace HackTheWorld
                     Regex r = new Regex(@"(?<name>[a-zA-z]+)\s*\+\+");
                     Match m = r.Match(input,stepforward);
                     str1 = m.Groups["name"].Value;
+                    if(str1 == "right" || str1 == "down" || str1 == "left" || str1 == "up")
+                    {
+                        return;
+                    }
                     hash[str1] = Convert.ToInt32(hash[str1]) + 1;
                 }
                 if(regSeparate[2].IsMatch(input,stepforward))
@@ -821,6 +827,10 @@ namespace HackTheWorld
                     Regex r = new Regex(@"(?<name>[a-zA-z]+)\s*\-\-");
                     Match m = r.Match(input,stepforward);
                     str1 = m.Groups["name"].Value;
+                    if(str1 == "right" || str1 == "down" || str1 == "left" || str1 == "up")
+                    {
+                        return;
+                    }
                     hash[str1] = Convert.ToInt32(hash[str1]) - 1;
                 }
                 if(regSeparate[3].IsMatch(input,stepforward))
@@ -829,6 +839,10 @@ namespace HackTheWorld
                     Match m = r.Match(input,stepforward);
                     str1 = m.Groups["name"].Value;
                     str2 = m.Groups["value"].Value;
+                    if(str1 == "right" || str1 == "down" || str1 == "left" || str1 == "up")
+                    {
+                        return;
+                    }
                     hash[str1] = Convert.ToInt32(hash[str1]) + int.Parse(str2);
                 }
                 if(regSeparate[4].IsMatch(input,stepforward))
@@ -837,6 +851,10 @@ namespace HackTheWorld
                     Match m = r.Match(input,stepforward);
                     str1 = m.Groups["name"].Value;
                     str2 = m.Groups["value"].Value;
+                    if(str1 == "right" || str1 == "down" || str1 == "left" || str1 == "up")
+                    {
+                        return;
+                    }
                     hash[str1] = Convert.ToInt32(hash[str1]) - int.Parse(str2);
                 }
 
