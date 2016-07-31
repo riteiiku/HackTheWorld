@@ -29,6 +29,10 @@
       "color": "Blue"
     },
     {
+      "type": "HackTheWorld.Gate, HackTheWorld, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+      "color": "Purple"
+    },
+    {
       "type": "HackTheWorld.Null, HackTheWorld, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
       "color": "Aqua"
     }

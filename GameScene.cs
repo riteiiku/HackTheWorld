@@ -146,7 +146,8 @@ namespace HackTheWorld
             {
                 if (_player.Intersects(g))
                 {
-                    Scene.Push(new EditScene(Stage.Load(g.NextStage)));
+                    Scene.Pop();
+                    return;
                 }
             }
 
