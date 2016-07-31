@@ -11,6 +11,12 @@ namespace HackTheWorld
     public class ConsoleBox : TextArea
     {
         public ConsoleBox() : base("abcde") { }
+        public ConsoleBox(string str) : base(str) { }
+
+        public void WriteLines(string str)
+        {
+            Lines = str.Split('\n');
+        }
 
         public override void Draw()
         {

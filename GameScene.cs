@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using static HackTheWorld.Constants;
 
@@ -34,6 +35,7 @@ namespace HackTheWorld
             _stage = stage;
             _textArea = new TextArea(stage.EditableObjects[0].Code) { Position = new Vector(CellSize * CellNumX, 20) };
             _console = new ConsoleBox() { Position = new Vector(CellSize * CellNumX, 300) };
+            _console.WriteLines(string.Join("\n", CodeParser.ConvertCodebox(stage.EditableObjects[0].Code).ToArray().Cast<string>()));
         }
 
         public override void Cleanup()
@@ -198,7 +200,7 @@ namespace HackTheWorld
             GraphicsContext.DrawRectangle(Pens.LightGray, CellNumX * CellSize, 280, 100, 20);
             Font font = new Font("Courier New", 12);
             GraphicsContext.DrawString("プログラム", font, Brushes.DarkSlateGray, CellNumX * CellSize, 3);
-            GraphicsContext.DrawString("コンソール", font, Brushes.WhiteSmoke, CellNumX * CellSize, 283);
+            GraphicsContext.DrawString("実行結果", font, Brushes.WhiteSmoke, CellNumX * CellSize, 283);
 
             _textArea.Draw();
             _console.Draw();
