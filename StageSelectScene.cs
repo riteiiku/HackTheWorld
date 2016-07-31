@@ -9,13 +9,19 @@ namespace HackTheWorld
         private string[] _files;
         private Image _title;
         private MenuItem[] _menuItems;
-        
+        private MenuItem _backButton;
+
         public override void Cleanup()
         {
         }
 
         public override void Startup()
         {
+            _backButton = new MenuItem(Image.FromFile(@"image\back.png"))
+            {
+                Size = new Vector(100, 50),
+                Position = new Vector(0, 640)
+            };
             _menuItems = new MenuItem[8];
 
             for (int i = 0; i < 8; i++)
@@ -48,6 +54,8 @@ namespace HackTheWorld
                 if (m.IsSelected) GraphicsContext.FillRectangle(Brushes.Red, m.X-3, m.Y-3, m.W+6, m.H+6);
                 _menuItems[i].Draw();
             }
+            if (_backButton.Clicked) Scene.Pop();
+            _backButton.Draw();
         }
     }
 }

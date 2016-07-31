@@ -52,9 +52,9 @@ namespace HackTheWorld
         public override void Startup()
         {
             // ゲーム画面外初期化
-            _backButton = new MenuItem(Image.FromFile(@"image\back.png"), Image.FromFile(@"image\back1.bmp")) {
-                Size = new Vector(50, 50),
-                Position = new Vector(25, 600)
+            _backButton = new MenuItem(Image.FromFile(@"image\back.png")) {
+                Size = new Vector( 100,50),
+                Position = new Vector(0, 600)
             };
             _resetButton = new MenuItem(Image.FromFile(@"image\reset.jpg"), Image.FromFile(@"image\reset1.bmp")) {
                 Size = new Vector(50, 50),

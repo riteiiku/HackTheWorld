@@ -12,7 +12,6 @@ namespace HackTheWorld
     {
         private MenuItem _backButton;
         private MenuItem _startButton;
-        private MenuItem _runButton;
         private Stage _stage;
         private readonly CodeBox _codebox;
 
@@ -30,29 +29,20 @@ namespace HackTheWorld
         public override void Startup()
         {
             _backButton = new MenuItem(Image.FromFile(@"image\back.png")) {
-                Size = new Vector(50, 50),
-                Position = new Vector(25, 500)
+                Size = new Vector(100, 50),
+                Position = new Vector(0, 600)
             };
-            _startButton = new MenuItem(Image.FromFile(@"image\masato3.jpg")) {
-                Size = new Vector(50, 50),
-                Position = new Vector(75, 500)
+            _startButton = new MenuItem(Image.FromFile(@"image\start.png")) {
+                Size = new Vector(100, 50),
+                Position = new Vector(110, 600)
             };
-            _runButton = new MenuItem(Image.FromFile(@"image\run.PNG"))
-            {
-                Size = new Vector(75 , 75) ,
-                Position = new Vector(125 , 500)
-            };
+          
         }
 
         public override void Update(float dt)
         {
             if (_backButton.Clicked) Scene.Pop();
             if (_startButton.Clicked) Scene.Push(new GameScene(_stage));
-            if (_runButton.Clicked)
-            {
-                // 文字列を CodeParser.cs にもってく
-                CodeParser.ConvertCodebox(_stage.EditableObjects[0].Code);
-            }
             if (Input.Control.Pressed && Input.W.Pushed) Application.Exit();
 
             if (Input.Control.Pressed)
@@ -84,7 +74,6 @@ namespace HackTheWorld
 
             _backButton.Draw();
             _startButton.Draw();
-            _runButton.Draw( );
         }
     }
 }
