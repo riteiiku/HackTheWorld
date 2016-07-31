@@ -181,11 +181,15 @@ namespace HackTheWorld
             }
 
             // 画面のクリア
-            ClearScreen();
+            GraphicsContext.Clear(Color.White);
+            DrawGrid();
             DebugWrite();
 
             // 描画
             _objects.ForEach(obj => obj.Draw());
+
+            GraphicsContext.FillRectangle(Brushes.SlateGray, 0, CellNumY * CellSize, ScreenWidth, ScreenHeight - CellNumY * CellSize);
+            GraphicsContext.FillRectangle(Brushes.SlateGray, CellNumX * CellSize, 0, ScreenWidth - CellNumX * CellSize, ScreenHeight);
 
             // ボタンの描画
             foreach (var menuitem in _menuItem)

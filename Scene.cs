@@ -67,9 +67,8 @@ namespace HackTheWorld
         /// </summary>
         public abstract void Startup();
 
-        public static void ClearScreen()
+        public static void DrawGrid()
         {
-            GraphicsContext.Clear(Color.White);
             for (int i = 0; i < CellNumX; i++)
             {
                 GraphicsContext.DrawLine(Pens.LightGray, i * CellSize, 0, i * CellSize, ScreenHeight);
@@ -79,8 +78,6 @@ namespace HackTheWorld
                 GraphicsContext.DrawLine(Pens.LightGray, 0, i * CellSize, ScreenWidth, i * CellSize);
             }
             GraphicsContext.DrawRectangle(Pens.Black, 0, 0, CellNumX * CellSize, CellNumY * CellSize);
-            GraphicsContext.FillRectangle(Brushes.SlateGray, 0, CellNumY * CellSize, ScreenWidth, ScreenHeight - CellNumY * CellSize);
-            GraphicsContext.FillRectangle(Brushes.SlateGray, CellNumX * CellSize, 0, ScreenWidth - CellNumX * CellSize, ScreenHeight);
         }
 
     }

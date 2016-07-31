@@ -67,9 +67,14 @@ namespace HackTheWorld
             }
             _codebox.Update();
 
-            ClearScreen();
+            GraphicsContext.Clear(Color.White);
+            DrawGrid();
 
             _stage.Objects.ForEach(obj => obj.Draw());
+
+            GraphicsContext.FillRectangle(Brushes.SlateGray, 0, CellNumY * CellSize, ScreenWidth, ScreenHeight - CellNumY * CellSize);
+            GraphicsContext.FillRectangle(Brushes.SlateGray, CellNumX * CellSize, 0, ScreenWidth - CellNumX * CellSize, ScreenHeight);
+
             _codebox.Draw();
 
             _backButton.Draw();
