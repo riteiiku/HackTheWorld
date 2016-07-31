@@ -533,22 +533,22 @@ namespace HackTheWorld
 
                     Regex reg = new Regex(@"(?<head>\s*.*,*move)\s*\(\s*(?<a>[\-|\d|\.]+)");
                     Match mat = reg.Match(s);
-                    string result = mat.Groups["head"].Value + ",";
+                    string result = mat.Groups["head"].Value;
 
                     switch(Convert.ToUInt32(mat.Groups["a"].Value)%4)
                     {
                         //0123→右下左上
                         case 0:
-                            result += "1,0,1";
+                            result += "(right)";
                             break;
                         case 1:
-                            result += "0,-1,1";
+                            result += "(down)";
                             break;
                         case 2:
-                            result += "-1,0,1";
+                            result += "(left)";
                             break;
                         case 3:
-                            result += "0,1,1";
+                            result += "(up)";
                             break;
                     }
                     sArray[i] = result;

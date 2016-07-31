@@ -6,6 +6,10 @@ using System;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using static HackTheWorld.Constants;
+using System.Collections;
+using System.Text.RegularExpressions;
+
+
 
 namespace HackTheWorld
 {
@@ -147,11 +151,18 @@ namespace HackTheWorld
             //以下のリストの中身("move, x, y")を小集合とする
 
             //動作テスト用配列
-//            var procedure = new List<string> { "size,1,1", "wait,1", "move,1,1,2", "touch,jump" };
-//            var procedure = new List<string> { "wait,2", "touch,move,1,1,1", "ontop,jump", "nearby,shoot" };
+            //            var procedure = new List<string> { "size,1,1", "wait,1", "move,1,1,2", "touch,jump" };
+            //            var procedure = new List<string> { "wait,2", "touch,move,1,1,1", "ontop,jump", "nearby,shoot" };
 
+
+            //ぺいぺいすまんな
+            //開いた結果を表示したい
+            var expansioned = CodeParser.ConvertCodebox(str);
+            //ここでなんか表示する
+
+            var procedure = ConvertDirectionToInt(expansioned).ToList();
             //本実行用配列
-            var procedure = CodeParser.ConvertCodebox(str).Cast<string>().ToList();
+            //var procedure = CodeParser.ConvertCodebox(str).Cast<string>().ToList();
 
             //各小集合に対して、以下の分割処理を行う。
             foreach (var elements in procedure)
@@ -295,6 +306,43 @@ namespace HackTheWorld
             });
         }
 
+        static IEnumerable<string> ConvertDirectionToInt(ArrayList sArray)
+        {
+            string result = "";
+            
+
+            for(int i = 0;i < sArray.Count;i++)
+            {
+                string s = (string)sArray[i];
+                if(Regex.IsMatch(s,@"^(player.ontop,|player.nearby,|player.touch,)*move"))
+                {
+
+                    Regex reg = new Regex(@"(?<head>\s*.*,*move)\s*\(\s*(?<a>\w+)");
+                    Match mat = reg.Match(s);
+                    result = mat.Groups["head"].Value + ",";
+
+                    switch(mat.Groups["a"].Value.ToString())
+                    {
+                        //0123→右下左上
+                        case "right":
+                            result += "1,0,1";
+                            break;
+                        case "down":
+                            result += "0,-1,1";
+                            break;
+                        case "left":
+                            result += "-1,0,1";
+                            break;
+                        case "up":
+                            result += "0,1,1";
+                            break;
+                    }
+                    sArray[i] = result;
+                }
+            }
+            return sArray.Cast<string>();
+        }
+        
     }
 
 }
