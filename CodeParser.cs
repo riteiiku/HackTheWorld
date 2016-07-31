@@ -515,20 +515,7 @@ namespace HackTheWorld
             for(int i = 0;i < sArray.Count;i++)
             {
                 string s = (string)sArray[i];
-                if(s.StartsWith("size"))
-                {
-                    Regex reg = new Regex(@"\s*size\s*\(\s*(?<a>[\d|\.]+)\s*,\s*(?<b>[\d|\.]+)\)");
-                    Match mat = reg.Match(s);
-                    string result = "size," + mat.Groups["a"].Value + "," + mat.Groups["b"].Value;
-                    sArray[i] = result;
-                }
-                if(Regex.IsMatch(s,@"^(player.ontop,|player.nearby,|player.touch,)*wait"))
-                {
-                    Regex reg = new Regex(@"(?<head>\s*.*,*wait)\s*\(\s*(?<a>[\d|\.]+)\s*\)");
-                    Match mat = reg.Match(s);
-                    string result = mat.Groups["head"].Value + "," + mat.Groups["a"].Value;
-                    sArray[i] = result;
-                }
+
                 if(Regex.IsMatch(s,@"^(player.ontop,|player.nearby,|player.touch,)*move"))
                 {
 
