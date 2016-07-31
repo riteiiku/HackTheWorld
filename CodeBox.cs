@@ -47,8 +47,9 @@ namespace HackTheWorld
             base.Initialize();
             _cols = 40;
             _fontSize = 16;
-            _fontWidth = _fontSize * 0.83f * 96 / (int)GraphicsContext.DpiX;
-            _lineHeight = _fontSize * 96 / (int)GraphicsContext.DpiY;
+            // 画面の解像度には非対応な
+            _fontWidth = _fontSize * 0.83f;
+            _lineHeight = _fontSize;
             _lineLimit = 15;
             _selectedBegin = -1;
             _selectedEnd = -1;
