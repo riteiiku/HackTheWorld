@@ -293,10 +293,10 @@ namespace HackTheWorld
             //意味ない言葉が混ざっていないか見たい
             //"size,1,1", "wait,1", "move,1,1,2"
             List<Regex> reg = new List<Regex>();
-            reg.Add(new Regex(@"\s*size\s*\(\s*[\w+|\+|\-|\*|\/|\.]+\s*,\s*[\w+|\+|\-|\*|\/|\.]+\)"));
-            reg.Add(new Regex(@"\s*wait\s*\(\s*[\w+|\+|\-|\*|\/|\.]+\)"));
-            reg.Add(new Regex(@"\s*move\([\w+|\+|\-|\*|\/|\.]+\)"));
-            reg.Add(new Regex(@"\s*\w+\s*=\s*[\w+|\+|\-|\*|\/]+\s*"));
+            reg.Add(new Regex(@"\s*size\s*\(\s*[\w+|\+|\-|\*|\/|\.|\%]+\s*,\s*[\w+|\+|\-|\*|\/|\.|\%]+\)"));
+            reg.Add(new Regex(@"\s*wait\s*\(\s*[\w+|\+|\-|\*|\/|\.|\%]+\)"));
+            reg.Add(new Regex(@"\s*move\([\w+|\+|\-|\*|\/|\.|\%]+\)"));
+            reg.Add(new Regex(@"\s*\w+\s*=\s*[\w+|\+|\-|\*|\/|\%]+\s*"));
             reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*="));
             reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\+"));
             reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*\-\-"));
