@@ -15,10 +15,17 @@ namespace HackTheWorld
         protected int LineHeight;
         protected int Cols;
         protected int LineLimit;
-        public string[] Text;
+        protected string[] Lines;
+
+        public TextArea(string str)
+        {
+            Initialize();
+            Lines = str.Split('\n');
+        }
 
         public override void Initialize()
         {
+            base.Initialize();
             FontSize = 12;
             Font = new Font("Courier New", FontSize);
             Pen = new Pen(Color.Black, 30);
@@ -35,8 +42,12 @@ namespace HackTheWorld
 
         public override void Draw()
         {
-            GraphicsContext.FillRectangle(Brushes.Gray, this);
+            GraphicsContext.FillRectangle(Brushes.LightGray, this);
             GraphicsContext.DrawRectangle(Pens.SteelBlue, this);
+            for (int i = 0; i < Lines.Length; i++)
+            {
+                GraphicsContext.DrawString(Lines[i], Font, Brushes.Black, X, Y + i * LineHeight - 2);
+            }
         }
 
     }

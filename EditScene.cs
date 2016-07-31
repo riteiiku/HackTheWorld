@@ -75,6 +75,11 @@ namespace HackTheWorld
             GraphicsContext.FillRectangle(Brushes.SlateGray, 0, CellNumY * CellSize, ScreenWidth, ScreenHeight - CellNumY * CellSize);
             GraphicsContext.FillRectangle(Brushes.SlateGray, CellNumX * CellSize, 0, ScreenWidth - CellNumX * CellSize, ScreenHeight);
 
+            GraphicsContext.FillRectangle(Brushes.WhiteSmoke, CellNumX * CellSize, 0, 100, 20);
+            GraphicsContext.DrawRectangle(Pens.DarkSlateGray, CellNumX * CellSize, 0, 100, 20);
+            Font font = new Font("Courier New", 12);
+            GraphicsContext.DrawString("プログラム", font, Brushes.DarkSlateGray, CellNumX * CellSize, 3);
+
             _codebox.Draw();
 
             _backButton.Draw();

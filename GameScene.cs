@@ -11,11 +11,13 @@ namespace HackTheWorld
     class GameScene : Scene
     {
         // ゲーム画面外の変数の定義
-        private Image _bgImage;
         private List<MenuItem> _menuItem;
         private MenuItem _backButton;
         private MenuItem _resetButton;
         private MenuItem _pauseButton;
+        private readonly TextArea _textArea;
+        private readonly ConsoleBox _console;
+
         // ゲーム内変数宣言
         private Stage _stage;
         private List<GameObject> _objects;
@@ -30,6 +32,8 @@ namespace HackTheWorld
         public GameScene(Stage stage)
         {
             _stage = stage;
+            _textArea = new TextArea(stage.EditableObjects[0].Code) { Position = new Vector(CellSize * CellNumX, 20) };
+            _console = new ConsoleBox() { Position = new Vector(CellSize * CellNumX, 300) };
         }
 
         public override void Cleanup()
@@ -61,7 +65,6 @@ namespace HackTheWorld
                 Position = new Vector(125, 600)
             };
             _menuItem = new List<MenuItem> {_backButton, _resetButton, _pauseButton};
-            _bgImage = Image.FromFile(@"image\backscreen.bmp");
 
             // CodeParser ができていないとeditableObjectsが機能しない。
             // shallow copy だとコンティニュー時に途中からスタートになる。
@@ -75,14 +78,12 @@ namespace HackTheWorld
             _items = s.Items;
             _gates = s.Gates;
 
-            //for (int i = 0; i < CellNumX; i++)
-            //    for (int j = 0; j < CellNumY; j++)
-
             foreach (var o in _editableObjects)
             {
                 o.Compile(s);
                 o.Execute();
             }
+
 
         }
 
@@ -190,6 +191,17 @@ namespace HackTheWorld
 
             GraphicsContext.FillRectangle(Brushes.SlateGray, 0, CellNumY * CellSize, ScreenWidth, ScreenHeight - CellNumY * CellSize);
             GraphicsContext.FillRectangle(Brushes.SlateGray, CellNumX * CellSize, 0, ScreenWidth - CellNumX * CellSize, ScreenHeight);
+
+            GraphicsContext.FillRectangle(Brushes.WhiteSmoke, CellNumX * CellSize, 0, 100, 20);
+            GraphicsContext.FillRectangle(Brushes.DarkSlateGray, CellNumX * CellSize, 280, 100, 20);
+            GraphicsContext.DrawRectangle(Pens.DarkSlateGray, CellNumX * CellSize, 0, 100, 20);
+            GraphicsContext.DrawRectangle(Pens.LightGray, CellNumX * CellSize, 280, 100, 20);
+            Font font = new Font("Courier New", 12);
+            GraphicsContext.DrawString("プログラム", font, Brushes.DarkSlateGray, CellNumX * CellSize, 3);
+            GraphicsContext.DrawString("コンソール", font, Brushes.WhiteSmoke, CellNumX * CellSize, 283);
+
+            _textArea.Draw();
+            _console.Draw();
 
             // ボタンの描画
             foreach (var menuitem in _menuItem)

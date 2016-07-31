@@ -71,6 +71,7 @@
     <Compile Include="Animation.cs" />
     <Compile Include="Block.cs" />
     <Compile Include="Bullet.cs" />
+    <Compile Include="ConsoleBox.cs" />
     <Compile Include="ContinueScene.cs" />
     <Compile Include="EditableEnemy.cs" />
     <Compile Include="MapEditScene.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Stage.cs" />
     <Compile Include="CodeState.cs" />
     <Compile Include="StageSelectScene.cs" />
+    <Compile Include="TextArea.cs" />
     <Compile Include="TitleScene.cs" />
     <Compile Include="Vector.cs" />
     <EmbeddedResource Include="Form1.resx">

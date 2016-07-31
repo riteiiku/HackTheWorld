@@ -61,6 +61,7 @@ namespace HackTheWorld
             _history[_current] = new CodeState(0, 5);
 
             X = CellSize * CellNumX;
+            Y = 20;
             Width = _fontWidth * _cols;
             Height = _lineHeight * _lineLimit + 4;
 
