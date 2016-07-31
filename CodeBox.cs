@@ -245,6 +245,7 @@ namespace HackTheWorld
                         current.MaxLine = current.Text.ToString().Split('\n').Length;
                         current.Cursor += str.Length;
                     }));
+                    if (current.MaxLine > _lineLimit) Undo();
                 }
 
             }
