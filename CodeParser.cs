@@ -8,6 +8,7 @@ namespace HackTheWorld
 {
     public static class CodeParser
     {
+
         //つらを
         #region メイン
         public static ArrayList ConvertCodebox(string originStr)
@@ -303,12 +304,12 @@ namespace HackTheWorld
             reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\="));
             reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*\-\="));
             reg.Add(new Regex(@"for"));
-            reg.Add( new Regex(@"if"));
-            reg.Add( new Regex(@"while"));
-            reg.Add( new Regex(@"end"));
-            reg.Add( new Regex(@"else"));
-            reg.Add( new Regex(@"break"));
-            reg.Add( new Regex(@"player.ontop"));
+            reg.Add(new Regex(@"if"));
+            reg.Add(new Regex(@"while"));
+            reg.Add(new Regex(@"end"));
+            reg.Add(new Regex(@"else"));
+            reg.Add(new Regex(@"break"));
+            reg.Add(new Regex(@"player.ontop"));
 
 
             Match[] mat = new Match[reg.Count];
