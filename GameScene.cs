@@ -75,6 +75,9 @@ namespace HackTheWorld
             _items = s.Items;
             _gates = s.Gates;
 
+            //for (int i = 0; i < CellNumX; i++)
+            //    for (int j = 0; j < CellNumY; j++)
+
             foreach (var o in _editableObjects)
             {
                 o.Compile(s);
@@ -178,7 +181,7 @@ namespace HackTheWorld
             }
 
             // 画面のクリア
-            ScreenClear();
+            ClearScreen();
             DebugWrite();
 
             // 描画
@@ -188,20 +191,6 @@ namespace HackTheWorld
             foreach (var menuitem in _menuItem)
             {
                 menuitem.Draw();
-            }
-        }
-
-        private void ScreenClear()
-        {
-            GraphicsContext.Clear(Color.White);
-            GraphicsContext.DrawImage(_bgImage,0,0);
-            for (int ix = 0; ix < ScreenWidth; ix += CellSize)
-            {
-                GraphicsContext.DrawLine(Pens.LightGray, ix, 0, ix, ScreenHeight);
-            }
-            for (int iy = 0; iy < ScreenHeight; iy += CellSize)
-            {
-                GraphicsContext.DrawLine(Pens.LightGray, 0, iy, ScreenWidth, iy);
             }
         }
 

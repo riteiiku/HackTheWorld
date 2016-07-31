@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using static HackTheWorld.Constants;
 
 namespace HackTheWorld
 {
@@ -64,6 +66,22 @@ namespace HackTheWorld
         /// シーンを初期化する。
         /// </summary>
         public abstract void Startup();
+
+        public static void ClearScreen()
+        {
+            GraphicsContext.Clear(Color.White);
+            for (int i = 0; i < CellNumX; i++)
+            {
+                GraphicsContext.DrawLine(Pens.LightGray, i * CellSize, 0, i * CellSize, ScreenHeight);
+            }
+            for (int i = 0; i < CellNumY; i++)
+            {
+                GraphicsContext.DrawLine(Pens.LightGray, 0, i * CellSize, ScreenWidth, i * CellSize);
+            }
+            GraphicsContext.DrawRectangle(Pens.Black, 0, 0, CellNumX * CellSize, CellNumY * CellSize);
+            GraphicsContext.FillRectangle(Brushes.SlateGray, 0, CellNumY * CellSize, ScreenWidth, ScreenHeight - CellNumY * CellSize);
+            GraphicsContext.FillRectangle(Brushes.SlateGray, CellNumX * CellSize, 0, ScreenWidth - CellNumX * CellSize, ScreenHeight);
+        }
 
     }
 }

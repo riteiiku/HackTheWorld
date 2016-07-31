@@ -152,6 +152,7 @@ namespace HackTheWorld
 
             //本実行用配列
             var procedure = CodeParser.ConvertCodebox(str).Cast<string>().ToList();
+//            var procedure = new List<string> {"move,1,1,1", "wait,2", "move,1,1,1"};
 
             //各小集合に対して、以下の分割処理を行う。
             foreach (var elements in procedure)

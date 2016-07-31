@@ -67,7 +67,8 @@ namespace HackTheWorld
             }
             _codebox.Update();
 
-            GraphicsContext.Clear(Color.White);
+            ClearScreen();
+
             _stage.Objects.ForEach(obj => obj.Draw());
             _codebox.Draw();
 

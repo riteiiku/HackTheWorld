@@ -46,11 +46,11 @@ namespace HackTheWorld
         {
             base.Initialize();
             _cols = 40;
-            _fontSize = 16;
+            _fontSize = 12;
             // 画面の解像度には非対応な
             _fontWidth = _fontSize * 0.83f;
             _lineHeight = _fontSize;
-            _lineLimit = 15;
+            _lineLimit = 20;
             _selectedBegin = -1;
             _selectedEnd = -1;
             _historyLength = 50;
@@ -62,7 +62,7 @@ namespace HackTheWorld
 
             X = CellSize * CellNumX;
             Width = _fontWidth * _cols;
-            Height = _lineHeight * _lineLimit;
+            Height = _lineHeight * _lineLimit + 4;
 
             _frame = 0;
         }
@@ -389,10 +389,10 @@ namespace HackTheWorld
             // 文字の描画
             for (int i = 0; i < lines.Length; i++)
             {
-                GraphicsContext.DrawString(lines[i], _font, Brushes.Black, X, Y + i * _lineHeight);
+                GraphicsContext.DrawString(lines[i], _font, Brushes.Black, X, Y + i * _lineHeight - 2);
             }
             // [END] を描画
-            GraphicsContext.DrawString("[END]", _font, Brushes.SteelBlue, X + lines[_history[_current].MaxLine - 1].Length * _fontWidth, Y + (_history[_current].MaxLine - 1) * _lineHeight);
+            GraphicsContext.DrawString("[END]", _font, Brushes.SteelBlue, X + lines[_history[_current].MaxLine - 1].Length * _fontWidth, Y + (_history[_current].MaxLine - 1) * _lineHeight - 2);
 
             // カーソルの描画
             if (_frame % 60 > 20)

@@ -108,6 +108,7 @@ namespace HackTheWorld
                 if (type == typeof(Player))
                 {
                     var p = new Player((float)obj["x"], (float)obj["y"]);
+                    Console.WriteLine(p);
                     stage.Player = p;
                     stage.Objects.Add(p);
                     continue;
