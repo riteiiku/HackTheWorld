@@ -41,6 +41,7 @@ namespace HackTheWorld
         {
             _bmp = new Bitmap(ScreenWidth, ScreenHeight);
             GraphicsContext = Graphics.FromImage(_bmp);
+            GraphicsContext.PageUnit = GraphicsUnit.Pixel;
 
             _pressedKeys = new LinkedList<Keys>();
             _pressedButtons = new LinkedList<MouseButtons>();
