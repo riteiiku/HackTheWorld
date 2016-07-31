@@ -12,7 +12,7 @@ namespace HackTheWorld
         #region メイン
         public static ArrayList ConvertCodebox(string originStr)
         {
-
+            originStr = RemoveSpace(originStr);
             Hashtable hash = new Hashtable();
 
             ICollection valuecall = hash.Values;
@@ -75,6 +75,7 @@ namespace HackTheWorld
         }
         public static ArrayList ConvertCodebox2(string originStr,int maxMove,int maxSize,int maxWait)
         {
+            originStr = RemoveSpace(originStr);
 
             Hashtable hash = new Hashtable();
 
@@ -191,6 +192,12 @@ namespace HackTheWorld
         #endregion
 
         #region チェック
+        static string RemoveSpace(string s)
+        {
+            string space = " ";
+            s = s.Replace(space,"");
+            return s;
+        }
         public static bool isValidScript(ArrayList sArray)
         {
             //全体の関数(for,if,while)の数
@@ -204,6 +211,7 @@ namespace HackTheWorld
             {
                 Console.WriteLine("関数とendの数が違う");
             }
+            if(countFunction == 0) return true;
             //初めのほうから順番に見ていく
             for(int i = 0;i < sArray.Count;i++)
             {
@@ -502,10 +510,10 @@ namespace HackTheWorld
                         switch(j)
                         {
                             case 0:
-                                rep = "0,-1,1";
+                                rep = "0,1,1";
                                 break;
                             case 1:
-                                rep = "0,1,1";
+                                rep = "0,-1,1";
                                 break;
                             case 2:
                                 rep = "-1,0,1";

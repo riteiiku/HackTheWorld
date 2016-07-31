@@ -15,6 +15,7 @@ namespace HackTheWorld
         private int _selectedBegin;
         private int _selectedEnd;
         private int _fontSize;
+        private float _fontWidth;
         private int _lineHeight;
         private int _cols;
         private int _lineLimit;
@@ -45,10 +46,10 @@ namespace HackTheWorld
         {
             base.Initialize();
             _cols = 40;
-            _fontSize = 12;
-            _lineHeight = 12;
-//            _fontSize = 12 * 96 / (int)GraphicsContext.DpiX;
-//            _lineHeight = 12 * 96 / (int)GraphicsContext.DpiY;
+            _fontSize = 16;
+            // 画面の解像度には非対応な
+            _fontWidth = _fontSize * 0.83f;
+            _lineHeight = _fontSize;
             _lineLimit = 15;
             _selectedBegin = -1;
             _selectedEnd = -1;
@@ -60,7 +61,7 @@ namespace HackTheWorld
             _history[_current] = new CodeState(0, 5);
 
             X = CellSize * CellNumX;
-            Width = _fontSize * _cols;
+            Width = _fontWidth * _cols;
             Height = _lineHeight * _lineLimit;
 
             _frame = 0;
@@ -78,7 +79,7 @@ namespace HackTheWorld
             {
                 int line = (int)(Input.Mouse.Y - MinY) / _lineHeight;
                 int targetLine = line < current.MaxLine ? line : current.MaxLine - 1;
-                int targetCursor = (int)(Input.Mouse.X - MinX) / (_fontSize - 2);
+                int targetCursor = (int)(Input.Mouse.X - MinX) / (int)_fontWidth;
                 current.Cursor = targetCursor < lines[targetLine].Length ? targetCursor : lines[targetLine].Length;
                 for (int i = 0; i < targetLine; i++)
                 {
@@ -391,16 +392,18 @@ namespace HackTheWorld
                 GraphicsContext.DrawString(lines[i], _font, Brushes.Black, X, Y + i * _lineHeight);
             }
             // [END] を描画
-            GraphicsContext.DrawString("[END]", _font, Brushes.SteelBlue, X + lines[_history[_current].MaxLine - 1].Length * (_fontSize - 2), Y + (_history[_current].MaxLine - 1) * _lineHeight);
+            GraphicsContext.DrawString("[END]", _font, Brushes.SteelBlue, X + lines[_history[_current].MaxLine - 1].Length * _fontWidth, Y + (_history[_current].MaxLine - 1) * _lineHeight);
 
             // カーソルの描画
             if (_frame % 60 > 20)
             {
-                GraphicsContext.DrawLine(Pens.Black, X + 10 * pos.Item2 + 2, Y + _lineHeight * pos.Item1 + 2, X + 10 * pos.Item2 + 2, Y + _lineHeight * (pos.Item1 + 1) + 2);
+                GraphicsContext.DrawLine(Pens.Black, X + _fontWidth * pos.Item2 + 2, Y + _lineHeight * pos.Item1 + 2, X + _fontWidth * pos.Item2 + 2, Y + _lineHeight * (pos.Item1 + 1) + 2);
             }
+#if DEBUG
             // デバッグ用の文字列の描画
             GraphicsContext.DrawString("line: " + pos.Item1 + ", cursor: " + pos.Item2 + ", maxline: " + _history[_current].MaxLine, _font, Brushes.Black, X, MaxY + 10);
             GraphicsContext.DrawString("DpiX: " + GraphicsContext.DpiX + ", DpiY:" + GraphicsContext.DpiY, _font, Brushes.Black, X, MaxY + 30);
+#endif
         }
 
     }
