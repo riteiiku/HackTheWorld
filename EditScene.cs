@@ -81,9 +81,9 @@ namespace HackTheWorld
             GraphicsContext.FillRectangle(Brushes.DarkSlateGray, CellNumX * CellSize, 280, 100, 20);
             GraphicsContext.DrawRectangle(Pens.DarkSlateGray, CellNumX * CellSize, 0, 100, 20);
             GraphicsContext.DrawRectangle(Pens.LightGray, CellNumX * CellSize, 280, 100, 20);
-            Font font = new Font("Courier New", 12);
-            GraphicsContext.DrawString("プログラム", font, Brushes.DarkSlateGray, CellNumX * CellSize, 3);
-            GraphicsContext.DrawString("けっか", font, Brushes.WhiteSmoke, CellNumX * CellSize, 283);
+
+            GraphicsContext.DrawString("プログラム", JapaneseFont, Brushes.DarkSlateGray, CellNumX * CellSize, 0);
+            GraphicsContext.DrawString("けっか", JapaneseFont, Brushes.WhiteSmoke, CellNumX * CellSize, 280);
 
 
             _codebox.Draw();
