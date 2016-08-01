@@ -33,6 +33,8 @@ namespace HackTheWorld
             string strResult = "";
             //try
             //{
+            ConvertDirectionToNumbers(sArray);
+
             if(!isFunction(sArray))
             {
                 resultArray.Clear();
@@ -50,7 +52,6 @@ namespace HackTheWorld
                 Console.WriteLine(strResult);
                 return resultArray;
             }
-            ConvertDirectionToNumbers(sArray);
 
             JumpToFunction(sArray,resultArray);
 
@@ -70,6 +71,8 @@ namespace HackTheWorld
             return resultArray;
 
         }
+
+        //未調整
         public static ArrayList ConvertCodebox(string originStr,int maxMove,int maxSize,int maxWait)
         {
             originStr = RemoveSpace(originStr);
@@ -513,17 +516,19 @@ namespace HackTheWorld
         }
         static void ConvertDirectionToNumbers(ArrayList sArray)
         {
-            Regex[] reg = new Regex[4];
-            reg[0] = new Regex(@"right");
-            reg[1] = new Regex(@"down");
-            reg[2] = new Regex(@"left");
-            reg[3] = new Regex(@"up");
+            string s = "";
 
-            Match[] mat = new Match[4];
+            List<Regex> reg = new List<Regex>();
+            reg.Add(new Regex(@"right"));
+            reg.Add(new Regex(@"down"));
+            reg.Add(new Regex(@"left"));
+            reg.Add(new Regex(@"up"));
+            
+            Match[] mat = new Match[reg.Count];
             for(int i = 0;i < sArray.Count;i++)
             {
-                string s = sArray[i].ToString();
-                for(int j = 0;j < 4;j++)
+                s = sArray[i].ToString();
+                for(int j = 0;j < reg.Count;j++)
                 {
                     mat[j] = reg[j].Match(s);
                     while(mat[j].Length > 0)
@@ -534,6 +539,21 @@ namespace HackTheWorld
                 }
                 sArray[i] = s;
             }
+
+            //rotateゾーン
+            reg.Clear();
+            reg.Add(new Regex(@"\.rotate"));
+            for(int i = 0;i < sArray.Count;i++)
+            {
+                s = sArray[i].ToString();
+                mat[0] = reg[0].Match(s);
+                if(mat[0].Length != 0)
+                {
+                    s = reg[0].Replace(s,"++");
+                    sArray[i] = s;
+                }
+            }
+
         }
 
         static void ConvertForYokouchi(ArrayList sArray)
