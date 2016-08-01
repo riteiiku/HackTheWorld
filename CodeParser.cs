@@ -14,7 +14,7 @@ namespace HackTheWorld
         public static ArrayList ConvertCodebox(string originStr)
         {
             originStr = RemoveSpace(originStr);
-            
+
 
             //行で分割
             //char[ ] delimiterChars = { ' ' , ':' , '\t' , '\n' };
@@ -36,7 +36,7 @@ namespace HackTheWorld
             if(!isFunction(sArray))
             {
                 resultArray.Clear();
-                resultArray.Add("へんな書きかた");
+                resultArray.Add("書き方がまちがってます");
                 strResult = ConvertArrayToString(resultArray);
                 Console.WriteLine(strResult);
                 return resultArray;
@@ -94,7 +94,7 @@ namespace HackTheWorld
             if(!isFunction(sArray))
             {
                 resultArray.Clear();
-                resultArray.Add("へんな書きかた");
+                resultArray.Add("書き方がまちがってます");
                 strResult = ConvertArrayToString(resultArray);
                 Console.WriteLine(strResult);
                 return resultArray;
@@ -111,7 +111,7 @@ namespace HackTheWorld
             if(OverLimitString(originStr,maxMove,maxSize,maxWait))
             {
                 resultArray.Clear();
-                resultArray.Add("関数が多すぎる");
+                resultArray.Add("関数が多すぎます");
                 strResult = ConvertArrayToString(resultArray);
                 Console.WriteLine(strResult);
                 return resultArray;
@@ -172,7 +172,7 @@ namespace HackTheWorld
             for(int i = 0;i < resultArray.Count;i++)
             {
                 string s = (string)resultArray[i];
-                if(!s.Contains("=") && !s.Contains("++")&&!s.Contains("--")) resultArray2.Add(resultArray[i]);
+                if(!s.Contains("=") && !s.Contains("++") && !s.Contains("--")) resultArray2.Add(resultArray[i]);
             }
             resultArray.Clear();
             for(int i = 0;i < resultArray2.Count;i++)
@@ -360,22 +360,33 @@ namespace HackTheWorld
         static bool LastCheck(string s)
         {
             string[] sArray = s.Split('\n');
-            int size = 3;
+            int count=0;
+            List<Regex> reg = new List<Regex>();
 
-            Regex[] reg = new Regex[size];
-            Match[] mat = new Match[size];
 
-            reg[0] = new Regex(@"move,,,");
-            reg[1] = new Regex(@"size,,");
-            reg[2] = new Regex(@"wait,$");
+            reg.Add(new Regex(@"^move\(\w+\)$"));
+            reg.Add(new Regex(@"^size\(\d+,\d+\)$"));
+            reg.Add(new Regex(@"^wait\(\d+\)$"));
+            reg.Add(new Regex(@"^player.ontop,move\(\w+\)$"));
+            reg.Add(new Regex(@"式がまちがってます"));
+            reg.Add(new Regex(@"whileがまちがってます"));
+            reg.Add(new Regex(@"書き方がまちがってます"));
+            reg.Add(new Regex(@"構文エラー"));
+            reg.Add(new Regex(@"関数が多すぎます"));
 
-            for(int i = 0;i < sArray.Length;i++)
+
+            Match[] mat = new Match[reg.Count];
+
+            //splitしてるせいか最後に絶対""が入るのでそれは読まない
+            for(int i = 0;i < sArray.Length-1;i++)
             {
-                for(int j = 0;j < size;j++)
+                count = 0;
+                for(int j = 0;j < reg.Count;j++)
                 {
                     mat[j] = reg[j].Match(sArray[i]);
-                    if(mat[j].Length != 0) return false;
+                    if(mat[j].Length != 0) count++;
                 }
+                if(count == 0) return false;
             }
             return true;
         }
@@ -411,7 +422,7 @@ namespace HackTheWorld
         {
             //かっこ優先
             int counter = 0;
-            while(System.Text.RegularExpressions.Regex.IsMatch(s,@"\([\d+|\+|\-|\*|\/|\(|\)|\%]+\)")&&counter<100)
+            while(System.Text.RegularExpressions.Regex.IsMatch(s,@"\([\d+|\+|\-|\*|\/|\(|\)|\%]+\)") && counter < 100)
             {
                 Regex regInside = new Regex(@"\((?<inside>[\d+|\+|\-|\*|\/|\%]+)\)");
                 Regex regInside2 = new Regex(@"\([\d+|\+|\-|\*|\/|\%]+\)");
@@ -439,15 +450,15 @@ namespace HackTheWorld
 
                 //Type t = dt.Compute(s,"").GetType();
 
-                s= dt.Compute(s,"").ToString();
+                s = dt.Compute(s,"").ToString();
                 double a = Convert.ToDouble(s.ToString());
                 int b = (int)a;
                 s = b.ToString();
             }
 
             if(System.Text.RegularExpressions.Regex.IsMatch(s,@"[\d+|\-]+")) return s;
-            
-            return "四則演算が変";
+
+            return "式がまちがってます";
         }
 
         //ArrayListを\nで区切りながらstringに入れる
@@ -503,7 +514,7 @@ namespace HackTheWorld
         static void ConvertDirectionToNumbers(ArrayList sArray)
         {
             Regex[] reg = new Regex[4];
-            reg[0] = new Regex(@"right"); 
+            reg[0] = new Regex(@"right");
             reg[1] = new Regex(@"down");
             reg[2] = new Regex(@"left");
             reg[3] = new Regex(@"up");
@@ -539,8 +550,8 @@ namespace HackTheWorld
                     string result = mat.Groups["head"].Value;
                     int dir = 0;
 
-                    if(Convert.ToInt32(mat.Groups["a"].Value) >= 0) dir=Convert.ToInt32(mat.Groups["a"].Value) % 4;
-                    else dir=4+ Convert.ToInt32(mat.Groups["a"].Value) % 4;
+                    if(Convert.ToInt32(mat.Groups["a"].Value) >= 0) dir = Convert.ToInt32(mat.Groups["a"].Value) % 4;
+                    else dir = 4 + Convert.ToInt32(mat.Groups["a"].Value) % 4;
 
 
                     switch(dir)
@@ -566,7 +577,7 @@ namespace HackTheWorld
         }
         static string SearchAndAssignment(string s)
         {
-            if(Regex.IsMatch(s,@"wait")|| Regex.IsMatch(s,@"size") || Regex.IsMatch(s,@"move"))
+            if(Regex.IsMatch(s,@"wait") || Regex.IsMatch(s,@"size") || Regex.IsMatch(s,@"move"))
             {
                 int counter = 0;
                 while(System.Text.RegularExpressions.Regex.IsMatch(s,@"wait\([\d+|\+|\-|\*|\/|\(|\)|\%]+\)") && counter < 100)
@@ -574,7 +585,7 @@ namespace HackTheWorld
                     Regex regInside = new Regex(@"wait\((?<inside>[\d+|\+|\-|\*|\/|\%|\(|\)]+)\)");
                     Regex regInside2 = new Regex(@"wait\([\d+|\+|\-|\*|\/|\%|\(|\)]+\)");
                     Match matInside = regInside.Match(s);
-                    string ans = "wait("+FourOperations(matInside.Groups["inside"].Value)+")";
+                    string ans = "wait(" + FourOperations(matInside.Groups["inside"].Value) + ")";
                     s = regInside2.Replace(s,ans,1);
                     counter++;
                 }
@@ -586,8 +597,8 @@ namespace HackTheWorld
                     Regex regInside3 = new Regex(@",[\d+|\+|\-|\*|\/|\(|\)|\%]+\)");
                     Match matInside = regInside.Match(s);
 
-                    string ansLeft = "size("+FourOperations(matInside.Groups["left"].Value)+",";
-                    string ansRight = FourOperations(matInside.Groups["right"].Value)+")";
+                    string ansLeft = "size(" + FourOperations(matInside.Groups["left"].Value) + ",";
+                    string ansRight = FourOperations(matInside.Groups["right"].Value) + ")";
 
                     s = regInside2.Replace(s,ansLeft,1);
                     s = regInside3.Replace(s,ansRight,1);
@@ -821,7 +832,7 @@ namespace HackTheWorld
                     Regex reg = new Regex(@"(?<name>\w+)\s*=\s*(?<right_hand>[\d|\w|\+|\-|\*|\/|\.|\(|\)]+)");
                     Match mat = reg.Match(input,stepforward);
                     str1 = mat.Groups["right_hand"].Value;
-                    
+
 
                     foreach(string k in keycall)
                     {
@@ -850,7 +861,7 @@ namespace HackTheWorld
 
                     //hashへの登録
                     str3 = mat.Groups["name"].Value;
-                    if(str3=="right"|| str3 == "down"||str3 == "left"||str3 == "up")
+                    if(str3 == "right" || str3 == "down" || str3 == "left" || str3 == "up")
                     {
                         return;
                     }
@@ -1168,7 +1179,7 @@ namespace HackTheWorld
 
                     return;
                 default:
-                    result.Add("whileがうまくいっていない");
+                    result.Add("whileがまちがってます");
                     return;
             }
         }
