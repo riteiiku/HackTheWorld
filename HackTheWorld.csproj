@@ -71,9 +71,11 @@
     <Compile Include="Animation.cs" />
     <Compile Include="Block.cs" />
     <Compile Include="Bullet.cs" />
+    <Compile Include="ClearScene.cs" />
+    <Compile Include="ConsoleBox.cs" />
     <Compile Include="ContinueScene.cs" />
     <Compile Include="EditableEnemy.cs" />
-    <Compile Include="EditMapScene.cs" />
+    <Compile Include="MapEditScene.cs" />
     <Compile Include="EditScene.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="Gate.cs" />
@@ -106,6 +108,7 @@
     <Compile Include="Stage.cs" />
     <Compile Include="CodeState.cs" />
     <Compile Include="StageSelectScene.cs" />
+    <Compile Include="TextArea.cs" />
     <Compile Include="TitleScene.cs" />
     <Compile Include="Vector.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -153,7 +156,7 @@
     </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>if $(ConfigurationName)==Release if exist .\doc\makedoc.bat cd doc &amp;&amp; makedoc.bat</PreBuildEvent>
+    <PreBuildEvent>if exist .\none  if $(ConfigurationName)==Release if exist .\doc\makedoc.bat cd doc &amp;&amp; makedoc.bat</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

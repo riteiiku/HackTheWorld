@@ -9,7 +9,6 @@ namespace HackTheWorld
     /// </summary>
     class PauseScene : Scene
     {
-        private int _cursor;
         private MenuItem _continueButton;
         private MenuItem _closeButton;
         private List<MenuItem> _menuItem;
@@ -34,37 +33,6 @@ namespace HackTheWorld
         public override void Update(float dt)
 
         {
-            if (Input.Down.Pushed || Input.Up.Pushed)
-            {
-                _cursor = (_cursor + 1) % 2;
-            }
-
-            for (int i = 0; i < _menuItem.Count; i++)
-            {
-                _menuItem[i].IsSelected = false;
-                if (_cursor == i) _menuItem[i].IsSelected = true;
-                if (_menuItem[i].Contains(Input.Mouse.Position))
-                {
-                    _cursor = -1;
-                    _menuItem[i].IsSelected = true;
-                }
-            }
-
-            //Zを押したときの処理
-            if (Input.Z.Pushed)
-            {
-                switch (_cursor)
-                {
-                    case -1:
-                        break;
-                    case 0:
-                        Scene.Pop();
-                        break;
-                    case 1:
-                        Scene.Current = new TitleScene();
-                        break;
-                }
-            }
             if (_continueButton.Clicked)
             {
                 Scene.Pop();

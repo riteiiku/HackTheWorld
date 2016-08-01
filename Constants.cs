@@ -54,6 +54,8 @@ namespace HackTheWorld
         /// </summary>
         public static Form WindowContext;
 
+        public static Font DefaultFont = new Font("Courier New", 12);
+        public static Font JapaneseFont = new Font("meiryo", 12);
 
         public static Func<int> CreateCounter()
         {

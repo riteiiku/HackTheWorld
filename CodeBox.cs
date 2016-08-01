@@ -14,8 +14,11 @@ namespace HackTheWorld
     {
         private int _selectedBegin;
         private int _selectedEnd;
+        private int _fontSize;
+        private float _fontWidth;
         private int _lineHeight;
         private int _cols;
+        private int _lineLimit;
         private IEditable _focusingObject;
         private Font _font;
         private Pen _pen;
@@ -43,19 +46,24 @@ namespace HackTheWorld
         {
             base.Initialize();
             _cols = 40;
-            _lineHeight = 12;
+            _fontSize = 12;
+            // 画面の解像度には非対応な
+            _fontWidth = _fontSize * 0.83f;
+            _lineHeight = _fontSize;
+            _lineLimit = 20;
             _selectedBegin = -1;
             _selectedEnd = -1;
             _historyLength = 50;
             _history = new CodeState[_historyLength];
-            _font = new Font("Courier New", 12);
+            _font = new Font("Courier New", _fontSize);
             _pen = new Pen(Color.Black, 30);
 
             _history[_current] = new CodeState(0, 5);
 
             X = CellSize * CellNumX;
-            Width = 12 * _cols;
-            Height = 600;
+            Y = 20;
+            Width = _fontWidth * _cols;
+            Height = _lineHeight * _lineLimit + 4;
 
             _frame = 0;
         }
@@ -72,7 +80,7 @@ namespace HackTheWorld
             {
                 int line = (int)(Input.Mouse.Y - MinY) / _lineHeight;
                 int targetLine = line < current.MaxLine ? line : current.MaxLine - 1;
-                int targetCursor = (int)(Input.Mouse.X - MinX) / 10;
+                int targetCursor = (int)(Input.Mouse.X - MinX) / (int)_fontWidth;
                 current.Cursor = targetCursor < lines[targetLine].Length ? targetCursor : lines[targetLine].Length;
                 for (int i = 0; i < targetLine; i++)
                 {
@@ -103,6 +111,7 @@ namespace HackTheWorld
 
             if (Input.Enter.Pushed || Input.Enter.Pressed && Counter() > 50 && Counter() % 10 == 0)
             {
+                if (current.MaxLine == _lineLimit) return;
                 Record(current);
                 current = _history[_current];
                 current.Text.Insert(current.Cursor++, '\n');
@@ -237,6 +246,7 @@ namespace HackTheWorld
                         current.MaxLine = current.Text.ToString().Split('\n').Length;
                         current.Cursor += str.Length;
                     }));
+                    if (current.MaxLine > _lineLimit) Undo();
                 }
 
             }
@@ -328,15 +338,15 @@ namespace HackTheWorld
         {
             // 編集部分の描画
             GraphicsContext.FillRectangle(Brushes.Azure, this);
-            GraphicsContext.DrawRectangle(Pens.ForestGreen, this);
+            GraphicsContext.DrawRectangle(Pens.SteelBlue, this);
 
             // フォーカスしているオブジェクトがなかったら return する。
             if (_focusingObject == null) return;
 
             // オブジェクトの名前の描画
-            GraphicsContext.FillRectangle(Brushes.LightGreen, X, Y, W, 20);
-            GraphicsContext.DrawRectangle(Pens.ForestGreen, X, Y, W, 20);
-            GraphicsContext.DrawString(_focusingObject.Name, _font, Brushes.Black, X, Y);
+//            GraphicsContext.FillRectangle(Brushes.LightGreen, X, Y, W, 20);
+//            GraphicsContext.DrawRectangle(Pens.ForestGreen, X, Y, W, 20);
+//            GraphicsContext.DrawString(_focusingObject.Name, _font, Brushes.Black, X, Y);
 
             // ターゲティングの描画
             GraphicsContext.DrawEllipse(_pen, _focusingObject.X, _focusingObject.Y, _focusingObject.Width, _focusingObject.Height);
@@ -362,9 +372,9 @@ namespace HackTheWorld
                 }
 
                 int beginX = (int)MinX + selectedBegin.Item2 * 10 + 2;
-                int beginY = (int)MinY + selectedBegin.Item1 * _lineHeight + 20;
+                int beginY = (int)MinY + selectedBegin.Item1 * _lineHeight;
                 int endX = selectedEnd.Item2 * 10 + 2;
-                int endY = (int)MinY + selectedEnd.Item1 * _lineHeight + 20;
+                int endY = (int)MinY + selectedEnd.Item1 * _lineHeight;
 
                 if (selectedBegin.Item1 == selectedEnd.Item1)
                 {
@@ -381,15 +391,21 @@ namespace HackTheWorld
             // 文字の描画
             for (int i = 0; i < lines.Length; i++)
             {
-                GraphicsContext.DrawString(lines[i], _font, Brushes.Black, X, Y + i * _lineHeight + 20);
+                GraphicsContext.DrawString(lines[i], _font, Brushes.Black, X, Y + i * _lineHeight - 2);
             }
+            // [END] を描画
+            GraphicsContext.DrawString("[END]", _font, Brushes.SteelBlue, X + lines[_history[_current].MaxLine - 1].Length * _fontWidth, Y + (_history[_current].MaxLine - 1) * _lineHeight - 2);
+
             // カーソルの描画
             if (_frame % 60 > 20)
             {
-                GraphicsContext.DrawLine(Pens.Black, X + 10 * pos.Item2 + 2, Y + _lineHeight * pos.Item1 + 22, X + 10 * pos.Item2 + 2, Y + _lineHeight * (pos.Item1 + 1) + 22);
+                GraphicsContext.DrawLine(Pens.Black, X + _fontWidth * pos.Item2 + 2, Y + _lineHeight * pos.Item1 + 2, X + _fontWidth * pos.Item2 + 2, Y + _lineHeight * (pos.Item1 + 1) + 2);
             }
+#if DEBUG
             // デバッグ用の文字列の描画
-            GraphicsContext.DrawString("line: " + pos.Item1 + ", cursor: " + pos.Item2 + ", maxline: " + _history[_current].MaxLine, _font, Brushes.Black, X, MaxY + 10);
+            GraphicsContext.DrawString("line: " + pos.Item1 + ", cursor: " + pos.Item2 + ", maxline: " + _history[_current].MaxLine, _font, Brushes.Black, X, ScreenHeight - 100);
+            GraphicsContext.DrawString("DpiX: " + GraphicsContext.DpiX + ", DpiY:" + GraphicsContext.DpiY, _font, Brushes.Black, X, ScreenHeight - 80);
+#endif
         }
 
     }

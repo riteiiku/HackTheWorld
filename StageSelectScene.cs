@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.IO;
 using static HackTheWorld.Constants;
 
@@ -7,9 +6,10 @@ namespace HackTheWorld
 {
     class StageSelectScene : Scene
     {
-        private Font _font;
-        private int _cursor;
         private string[] _files;
+        private Image _title;
+        private MenuItem[] _menuItems;
+        private MenuItem _backButton;
 
         public override void Cleanup()
         {
@@ -17,24 +17,45 @@ namespace HackTheWorld
 
         public override void Startup()
         {
-            _cursor = 0;
-            _font = new Font("Courier New", 12);
+            _backButton = new MenuItem(Image.FromFile(@"image\back.png"))
+            {
+                Size = new Vector(100, 50),
+                Position = new Vector(0, 640)
+            };
+            _menuItems = new MenuItem[8];
+
+            for (int i = 0; i < 8; i++)
+            {
+                _menuItems[i] = new MenuItem(Image.FromFile(@".\image\stage" + (i + 1) + ".png"))
+                {
+                    Position = new Vector(300*(i%4) + 50, 220*(i/4) + 200),
+                    Size = new Vector(280, 200)
+                };
+            }
+
             _files = Directory.GetFiles(@".\stage\", "*.json", SearchOption.TopDirectoryOnly);
+            _title = Image.FromFile(@"image\stageSelect.png");
         }
 
         public override void Update(float dt)
         {
-            int length = _files.Length;
-            if (Input.Up.Pushed)   _cursor = (_cursor-1) % length;
-            if (Input.Down.Pushed) _cursor = (_cursor+1) % length;
 
-            if (Input.Z.Pushed) Scene.Push(new EditScene(Stage.Load(Path.GetFileName(_files[_cursor]))));
+            for (int i=0; i<8; i++)
+            {
+                if(_menuItems[i].Clicked) Scene.Push(new EditScene(Stage.Load(Path.GetFileName(_files[i])),i));
+            }
 
             GraphicsContext.Clear(Color.White);
-            for (int i = 0; i < length; i++)
+            GraphicsContext.DrawImage(_title, 0, 0);
+
+            for (int i = 0; i < 8; i++)
             {
-                GraphicsContext.DrawString(_files[i], _font, i == _cursor ? Brushes.Yellow : Brushes.Black, 150, 200 + 20*i);
+                var m = _menuItems[i];
+                if (m.IsSelected) GraphicsContext.FillRectangle(Brushes.Red, m.X-3, m.Y-3, m.W+6, m.H+6);
+                _menuItems[i].Draw();
             }
+            if (_backButton.Clicked) Scene.Pop();
+            _backButton.Draw();
         }
     }
 }

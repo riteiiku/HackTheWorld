@@ -114,6 +114,13 @@ namespace HackTheWorld
                         s.Objects.Add(item);
                         continue;
                     }
+                    if (type == typeof(Gate))
+                    {
+                        Gate e = new Gate(CellSize * i, CellSize * j);
+                        s.Gates.Add(e);
+                        s.Objects.Add(e);
+                        continue;
+                    }
                     if (type == typeof(EditableBlock))
                     {
                         EditableBlock b = new EditableBlock(CellSize * i, CellSize * j)
@@ -192,7 +199,8 @@ namespace HackTheWorld
             GraphicsContext.DrawString("[3]緑: Item", font, Brushes.Black, 200, 160);
             GraphicsContext.DrawString("[4]黄: EditableBlock", font, Brushes.Black, 200, 180);
             GraphicsContext.DrawString("[5]赤: EditableEnemy", font, Brushes.Black, 200, 200);
-            GraphicsContext.DrawString("[6]水: Nothing", font, Brushes.Black, 200, 220);
+            GraphicsContext.DrawString("[7]紫: Gate", font, Brushes.Black, 200, 220);
+            GraphicsContext.DrawString("[8]水: Nothing", font, Brushes.Black, 200, 240);
             GraphicsContext.DrawString("この画面で Ctrl + S を押すと、\nstage フォルダに保存される。", font, Brushes.Black, 200, 300);
             GraphicsContext.DrawString("消しゴムは右クリック", font, Brushes.Black, X, MaxY + 20);
         }

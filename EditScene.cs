@@ -12,16 +12,17 @@ namespace HackTheWorld
     {
         private MenuItem _backButton;
         private MenuItem _startButton;
-        private MenuItem _runButton;
-        private List<MenuItem> _menuItem;
         private Stage _stage;
         private readonly CodeBox _codebox;
-
-        public EditScene(Stage stage)
+        private readonly ConsoleBox _console;
+        private int _stageNo;
+        public EditScene(Stage stage, int stageNo=0)
         {
+            _stageNo = stageNo;
             _stage = stage;
             if (stage.EditableObjects.Count == 0) _codebox = new CodeBox();
             else _codebox = new CodeBox(stage.EditableObjects[0]);
+            _console = new ConsoleBox() { Position = new Vector(CellSize * CellNumX, 300) };
         }
 
         public override void Cleanup()
@@ -31,34 +32,29 @@ namespace HackTheWorld
         public override void Startup()
         {
             _backButton = new MenuItem(Image.FromFile(@"image\back.png")) {
+<<<<<<< HEAD
                 Size = new Vector(50, 50),
                 Position = new Vector(25, 500)
             };
             _startButton = new MenuItem(Image.FromFile(@"image\masato3.png")) {
                 Size = new Vector(50, 50),
                 Position = new Vector(75, 500)
+=======
+                Size = new Vector(100, 50),
+                Position = new Vector(0, 600)
+>>>>>>> d2c32f3605548d6b22d258ffc0b0d55f5debbfdd
             };
-            _runButton = new MenuItem(Image.FromFile(@"image\run.PNG"))
-            {
-                Size = new Vector(75 , 75) ,
-                Position = new Vector(125 , 500)
+            _startButton = new MenuItem(Image.FromFile(@"image\start.png")) {
+                Size = new Vector(100, 50),
+                Position = new Vector(110, 600)
             };
-            _menuItem = new List<MenuItem> {_backButton, _startButton,_runButton};
+          
         }
 
         public override void Update(float dt)
         {
-            foreach (var button in _menuItem)
-            {
-                button.IsSelected = button.Contains(Input.Mouse.Position);
-            }
             if (_backButton.Clicked) Scene.Pop();
-            if (_startButton.Clicked) Scene.Push(new GameScene(_stage));
-            if (_runButton.Clicked)
-            {
-                // 文字列を CodeParser.cs にもってく
-                CodeParser.ConvertCodebox(_stage.EditableObjects[0].Code);
-            }
+            if (_startButton.Clicked) Scene.Push(new GameScene(_stage,_stageNo));
             if (Input.Control.Pressed && Input.W.Pushed) Application.Exit();
 
             if (Input.Control.Pressed)
@@ -74,12 +70,27 @@ namespace HackTheWorld
             _codebox.Update();
 
             GraphicsContext.Clear(Color.White);
+            DrawGrid();
+
             _stage.Objects.ForEach(obj => obj.Draw());
+
+            GraphicsContext.FillRectangle(Brushes.SlateGray, 0, CellNumY * CellSize, ScreenWidth, ScreenHeight - CellNumY * CellSize);
+            GraphicsContext.FillRectangle(Brushes.SlateGray, CellNumX * CellSize, 0, ScreenWidth - CellNumX * CellSize, ScreenHeight);
+
+            GraphicsContext.FillRectangle(Brushes.WhiteSmoke, CellNumX * CellSize, 0, 100, 20);
+            GraphicsContext.FillRectangle(Brushes.DarkSlateGray, CellNumX * CellSize, 280, 100, 20);
+            GraphicsContext.DrawRectangle(Pens.DarkSlateGray, CellNumX * CellSize, 0, 100, 20);
+            GraphicsContext.DrawRectangle(Pens.LightGray, CellNumX * CellSize, 280, 100, 20);
+
+            GraphicsContext.DrawString("プログラム", JapaneseFont, Brushes.DarkSlateGray, CellNumX * CellSize, 0);
+            GraphicsContext.DrawString("けっか", JapaneseFont, Brushes.WhiteSmoke, CellNumX * CellSize, 280);
+
+
             _codebox.Draw();
+            _console.Draw();
 
             _backButton.Draw();
             _startButton.Draw();
-            _runButton.Draw( );
         }
     }
 }

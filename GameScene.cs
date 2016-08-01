@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using static HackTheWorld.Constants;
 
@@ -11,11 +12,13 @@ namespace HackTheWorld
     class GameScene : Scene
     {
         // ゲーム画面外の変数の定義
-        private Image _bgImage;
         private List<MenuItem> _menuItem;
         private MenuItem _backButton;
         private MenuItem _resetButton;
         private MenuItem _pauseButton;
+        private readonly TextArea _textArea;
+        private readonly ConsoleBox _console;
+        private readonly int _stageNo;
         // ゲーム内変数宣言
         private Stage _stage;
         private List<GameObject> _objects;
@@ -27,9 +30,12 @@ namespace HackTheWorld
         private List<Item> _items;
         private List<Gate> _gates;
 
-        public GameScene(Stage stage)
+        public GameScene(Stage stage,int stageNo=0)
         {
             _stage = stage;
+            _textArea = new TextArea(stage.EditableObjects[0].Code) { Position = new Vector(CellSize * CellNumX, 20) };
+            _console = new ConsoleBox() { Position = new Vector(CellSize * CellNumX, 300) };
+            _console.WriteLines(string.Join("\n", CodeParser.ConvertCodebox(stage.EditableObjects[0].Code).ToArray().Cast<string>()));
         }
 
         public override void Cleanup()
@@ -48,9 +54,9 @@ namespace HackTheWorld
         public override void Startup()
         {
             // ゲーム画面外初期化
-            _backButton = new MenuItem(Image.FromFile(@"image\back.png"), Image.FromFile(@"image\back1.bmp")) {
-                Size = new Vector(50, 50),
-                Position = new Vector(25, 600)
+            _backButton = new MenuItem(Image.FromFile(@"image\back.png")) {
+                Size = new Vector( 100,50),
+                Position = new Vector(0, 600)
             };
             _resetButton = new MenuItem(Image.FromFile(@"image\reset.jpg"), Image.FromFile(@"image\reset1.bmp")) {
                 Size = new Vector(50, 50),
@@ -61,7 +67,10 @@ namespace HackTheWorld
                 Position = new Vector(125, 600)
             };
             _menuItem = new List<MenuItem> {_backButton, _resetButton, _pauseButton};
+<<<<<<< HEAD
             _bgImage = Image.FromFile(@"image\cyber1.jpg");
+=======
+>>>>>>> d2c32f3605548d6b22d258ffc0b0d55f5debbfdd
 
             // CodeParser ができていないとeditableObjectsが機能しない。
             // shallow copy だとコンティニュー時に途中からスタートになる。
@@ -81,24 +90,21 @@ namespace HackTheWorld
                 o.Execute();
             }
 
+
         }
 
         public override void Update(float dt)
         {
             // ゲーム外処理
-            if (Input.Control.Pressed && Input.W.Pushed) Application.Exit();
-            if (_backButton.Clicked || Input.X.Pushed || Input.Back.Pushed) Scene.Pop();
-            foreach (var button in _menuItem)
+            if (Input.Control.Pressed)
             {
-                button.IsSelected = button.Contains(Input.Mouse.Position);
+                if (Input.W.Pushed) Application.Exit();
+                if (Input.X.Pushed || Input.Back.Pushed) Scene.Pop();
             }
+
+            if (_backButton.Clicked) Scene.Pop();
             if (_resetButton.Clicked) Startup();
             if (_pauseButton.Clicked) Scene.Push(new PauseScene());
-
-            if (Input.Control.Pressed && Input.Shift.Pressed && Input.S.Pushed)
-            {
-
-            }
 
             if (_player == null) return;
 
@@ -144,7 +150,8 @@ namespace HackTheWorld
             {
                 if (_player.Intersects(g))
                 {
-                    Scene.Push(new EditScene(Stage.Load(g.NextStage)));
+                    Scene.Push(new ClearScene(_stageNo));
+                    return;
                 }
             }
 
@@ -182,30 +189,31 @@ namespace HackTheWorld
             }
 
             // 画面のクリア
-            ScreenClear();
+            GraphicsContext.Clear(Color.White);
+            DrawGrid();
             DebugWrite();
 
             // 描画
             _objects.ForEach(obj => obj.Draw());
 
+            GraphicsContext.FillRectangle(Brushes.SlateGray, 0, CellNumY * CellSize, ScreenWidth, ScreenHeight - CellNumY * CellSize);
+            GraphicsContext.FillRectangle(Brushes.SlateGray, CellNumX * CellSize, 0, ScreenWidth - CellNumX * CellSize, ScreenHeight);
+
+            GraphicsContext.FillRectangle(Brushes.WhiteSmoke, CellNumX * CellSize, 0, 100, 20);
+            GraphicsContext.FillRectangle(Brushes.DarkSlateGray, CellNumX * CellSize, 280, 100, 20);
+            GraphicsContext.DrawRectangle(Pens.DarkSlateGray, CellNumX * CellSize, 0, 100, 20);
+            GraphicsContext.DrawRectangle(Pens.LightGray, CellNumX * CellSize, 280, 100, 20);
+
+            GraphicsContext.DrawString("プログラム", JapaneseFont, Brushes.DarkSlateGray, CellNumX * CellSize, 0);
+            GraphicsContext.DrawString("けっか", JapaneseFont, Brushes.WhiteSmoke, CellNumX * CellSize, 280);
+
+            _textArea.Draw();
+            _console.Draw();
+
             // ボタンの描画
             foreach (var menuitem in _menuItem)
             {
                 menuitem.Draw();
-            }
-        }
-
-        private void ScreenClear()
-        {
-            GraphicsContext.Clear(Color.White);
-            GraphicsContext.DrawImage(_bgImage,0,0);
-            for (int ix = 0; ix < ScreenWidth; ix += CellSize)
-            {
-                GraphicsContext.DrawLine(Pens.LightGray, ix, 0, ix, ScreenHeight);
-            }
-            for (int iy = 0; iy < ScreenHeight; iy += CellSize)
-            {
-                GraphicsContext.DrawLine(Pens.LightGray, 0, iy, ScreenWidth, iy);
             }
         }
 
@@ -215,11 +223,10 @@ namespace HackTheWorld
             string PY = " Y: " + ((int)(_player.Y * 1000 / CellSize)).ToString("D6") + "#";
             string PVX = "VX: " + ((int)(_player.VX * 1000 / CellSize)).ToString("D6") + "#";
             string PVY = "VY: " + ((int)(_player.VY * 1000 / CellSize)).ToString("D6") + "#";
-            Font font = new Font("Courier New", 12);
-            GraphicsContext.DrawString(PX, font, Brushes.Black, ScreenWidth - 180, 100);
-            GraphicsContext.DrawString(PY, font, Brushes.Black, ScreenWidth - 180, 120);
-            GraphicsContext.DrawString(PVX, font, Brushes.Black, ScreenWidth - 180, 140);
-            GraphicsContext.DrawString(PVY, font, Brushes.Black, ScreenWidth - 180, 160);
+            GraphicsContext.DrawString(PX, DefaultFont, Brushes.Black, ScreenWidth - 180, 100);
+            GraphicsContext.DrawString(PY, DefaultFont, Brushes.Black, ScreenWidth - 180, 120);
+            GraphicsContext.DrawString(PVX, DefaultFont, Brushes.Black, ScreenWidth - 180, 140);
+            GraphicsContext.DrawString(PVY, DefaultFont, Brushes.Black, ScreenWidth - 180, 160);
         }
 
     }
