@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using static HackTheWorld.Constants;
 
 namespace HackTheWorld
 {
@@ -25,9 +24,6 @@ namespace HackTheWorld
         public override void Draw()
         {
             if (!IsAlive) return;
-            //GraphicsContext.FillRectangle(Brushes.HotPink, X, Y, Width, Height);
-            GraphicsContext.FillPie(Brushes.HotPink, X, Y, Width, Height, 0, 360);
-            GraphicsContext.DrawRectangle(Pens.Magenta, X, Y, Width, Height);
             ((IDrawable)this).Draw();
         }
 
