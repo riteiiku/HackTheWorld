@@ -14,12 +14,14 @@ namespace HackTheWorld
         private MenuItem _startButton;
         private Stage _stage;
         private readonly CodeBox _codebox;
+        private readonly ConsoleBox _console;
 
         public EditScene(Stage stage)
         {
             _stage = stage;
             if (stage.EditableObjects.Count == 0) _codebox = new CodeBox();
             else _codebox = new CodeBox(stage.EditableObjects[0]);
+            _console = new ConsoleBox() { Position = new Vector(CellSize * CellNumX, 300) };
         }
 
         public override void Cleanup()
@@ -66,11 +68,16 @@ namespace HackTheWorld
             GraphicsContext.FillRectangle(Brushes.SlateGray, CellNumX * CellSize, 0, ScreenWidth - CellNumX * CellSize, ScreenHeight);
 
             GraphicsContext.FillRectangle(Brushes.WhiteSmoke, CellNumX * CellSize, 0, 100, 20);
+            GraphicsContext.FillRectangle(Brushes.DarkSlateGray, CellNumX * CellSize, 280, 100, 20);
             GraphicsContext.DrawRectangle(Pens.DarkSlateGray, CellNumX * CellSize, 0, 100, 20);
-            Font font = new Font("Courier New", 12);
-            GraphicsContext.DrawString("プログラム", font, Brushes.DarkSlateGray, CellNumX * CellSize, 3);
+            GraphicsContext.DrawRectangle(Pens.LightGray, CellNumX * CellSize, 280, 100, 20);
+
+            GraphicsContext.DrawString("プログラム", JapaneseFont, Brushes.DarkSlateGray, CellNumX * CellSize, 0);
+            GraphicsContext.DrawString("けっか", JapaneseFont, Brushes.WhiteSmoke, CellNumX * CellSize, 280);
+
 
             _codebox.Draw();
+            _console.Draw();
 
             _backButton.Draw();
             _startButton.Draw();

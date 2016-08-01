@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.ComponentModel;
+using System.Drawing;
 using Newtonsoft.Json;
 
 namespace HackTheWorld
@@ -6,9 +7,6 @@ namespace HackTheWorld
     [JsonObject(MemberSerialization.OptIn)]
     public class Gate : GameObject, IDrawable
     {
-        [JsonProperty("next", Order = 0)]
-        public string NextStage { get; set; }
-
         public Image Image { get; set; }
 
         public Gate(float x, float y) : base(x, y) {}

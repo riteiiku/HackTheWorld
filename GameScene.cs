@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using static HackTheWorld.Constants;
 
@@ -34,6 +35,7 @@ namespace HackTheWorld
             _stage = stage;
             _textArea = new TextArea(stage.EditableObjects[0].Code) { Position = new Vector(CellSize * CellNumX, 20) };
             _console = new ConsoleBox() { Position = new Vector(CellSize * CellNumX, 300) };
+            _console.WriteLines(string.Join("\n", CodeParser.ConvertCodebox(stage.EditableObjects[0].Code).ToArray().Cast<string>()));
         }
 
         public override void Cleanup()
@@ -144,7 +146,8 @@ namespace HackTheWorld
             {
                 if (_player.Intersects(g))
                 {
-                    Scene.Push(new EditScene(Stage.Load(g.NextStage)));
+                    Scene.Pop();
+                    return;
                 }
             }
 
@@ -196,9 +199,9 @@ namespace HackTheWorld
             GraphicsContext.FillRectangle(Brushes.DarkSlateGray, CellNumX * CellSize, 280, 100, 20);
             GraphicsContext.DrawRectangle(Pens.DarkSlateGray, CellNumX * CellSize, 0, 100, 20);
             GraphicsContext.DrawRectangle(Pens.LightGray, CellNumX * CellSize, 280, 100, 20);
-            Font font = new Font("Courier New", 12);
-            GraphicsContext.DrawString("プログラム", font, Brushes.DarkSlateGray, CellNumX * CellSize, 3);
-            GraphicsContext.DrawString("コンソール", font, Brushes.WhiteSmoke, CellNumX * CellSize, 283);
+
+            GraphicsContext.DrawString("プログラム", JapaneseFont, Brushes.DarkSlateGray, CellNumX * CellSize, 0);
+            GraphicsContext.DrawString("けっか", JapaneseFont, Brushes.WhiteSmoke, CellNumX * CellSize, 280);
 
             _textArea.Draw();
             _console.Draw();
@@ -216,11 +219,10 @@ namespace HackTheWorld
             string PY = " Y: " + ((int)(_player.Y * 1000 / CellSize)).ToString("D6") + "#";
             string PVX = "VX: " + ((int)(_player.VX * 1000 / CellSize)).ToString("D6") + "#";
             string PVY = "VY: " + ((int)(_player.VY * 1000 / CellSize)).ToString("D6") + "#";
-            Font font = new Font("Courier New", 12);
-            GraphicsContext.DrawString(PX, font, Brushes.Black, ScreenWidth - 180, 100);
-            GraphicsContext.DrawString(PY, font, Brushes.Black, ScreenWidth - 180, 120);
-            GraphicsContext.DrawString(PVX, font, Brushes.Black, ScreenWidth - 180, 140);
-            GraphicsContext.DrawString(PVY, font, Brushes.Black, ScreenWidth - 180, 160);
+            GraphicsContext.DrawString(PX, DefaultFont, Brushes.Black, ScreenWidth - 180, 100);
+            GraphicsContext.DrawString(PY, DefaultFont, Brushes.Black, ScreenWidth - 180, 120);
+            GraphicsContext.DrawString(PVX, DefaultFont, Brushes.Black, ScreenWidth - 180, 140);
+            GraphicsContext.DrawString(PVY, DefaultFont, Brushes.Black, ScreenWidth - 180, 160);
         }
 
     }

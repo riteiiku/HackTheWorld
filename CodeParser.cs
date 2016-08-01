@@ -176,7 +176,7 @@ namespace HackTheWorld
             for(int i = 0;i < resultArray.Count;i++)
             {
                 string s = (string)resultArray[i];
-                if(!s.Contains("=") && !s.Contains("+")) resultArray2.Add(resultArray[i]);
+                if(!s.Contains("=") && !s.Contains("++")&&!s.Contains("--")) resultArray2.Add(resultArray[i]);
             }
             resultArray.Clear();
             for(int i = 0;i < resultArray2.Count;i++)
@@ -515,31 +515,24 @@ namespace HackTheWorld
             for(int i = 0;i < sArray.Count;i++)
             {
                 string s = (string)sArray[i];
-                if(s.StartsWith("size"))
-                {
-                    Regex reg = new Regex(@"\s*size\s*\(\s*(?<a>[\d|\.]+)\s*,\s*(?<b>[\d|\.]+)\)");
-                    Match mat = reg.Match(s);
-                    string result = "size," + mat.Groups["a"].Value + "," + mat.Groups["b"].Value;
-                    sArray[i] = result;
-                }
-                if(Regex.IsMatch(s,@"^(player.ontop,|player.nearby,|player.touch,)*wait"))
-                {
-                    Regex reg = new Regex(@"(?<head>\s*.*,*wait)\s*\(\s*(?<a>[\d|\.]+)\s*\)");
-                    Match mat = reg.Match(s);
-                    string result = mat.Groups["head"].Value + "," + mat.Groups["a"].Value;
-                    sArray[i] = result;
-                }
+
                 if(Regex.IsMatch(s,@"^(player.ontop,|player.nearby,|player.touch,)*move"))
                 {
 
                     Regex reg = new Regex(@"(?<head>\s*.*,*move)\s*\(\s*(?<a>[\-|\d|\.]+)");
                     Match mat = reg.Match(s);
                     string result = mat.Groups["head"].Value;
+                    int dir = 0;
 
-                    switch(Convert.ToUInt32(mat.Groups["a"].Value)%4)
+                    if(Convert.ToInt32(mat.Groups["a"].Value) >= 0) dir=Convert.ToInt32(mat.Groups["a"].Value) % 4;
+                    else dir=4+ Convert.ToInt32(mat.Groups["a"].Value) % 4;
+
+
+                    switch(dir)
                     {
                         //0123→右下左上
                         case 0:
+                        case 4:
                             result += "(right)";
                             break;
                         case 1:
@@ -763,8 +756,8 @@ namespace HackTheWorld
             regSeparate[0] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*=\s*(?<right_hand>[(?<value>\w+)|\+|\-|\*|\/|\.]+)\s*");
             regSeparate[1] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\+");
             regSeparate[2] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\-\-");
-            regSeparate[3] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\=\s*(?<value>\d+)");
-            regSeparate[4] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\-\=\s*(?<value>\d+)");
+            regSeparate[3] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\=\s*(?<value>\w+)");
+            regSeparate[4] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\-\=\s*(?<value>\w+)");
 
             int stepforward = 0;
 
@@ -848,7 +841,7 @@ namespace HackTheWorld
                 }
                 if(regSeparate[4].IsMatch(input,stepforward))
                 {
-                    Regex r = new Regex(@"(?<name>[a-zA-z]+)\s*\+\=\s*(?<value>\d+)");
+                    Regex r = new Regex(@"(?<name>[a-zA-z]+)\s*\-\=\s*(?<value>\d+)");
                     Match m = r.Match(input,stepforward);
                     str1 = m.Groups["name"].Value;
                     str2 = m.Groups["value"].Value;
@@ -953,7 +946,7 @@ namespace HackTheWorld
 
                         //次の検索開始位置を決める
                         input = (string)sArray[x];
-                        int nextIndex = foundIndex + key.Length - 1;
+                        int nextIndex = foundIndex + key.Length;
                         if(nextIndex < input.Length)
                         {
                             //次の位置を探す
@@ -991,7 +984,7 @@ namespace HackTheWorld
                 case 1:
                     Regex reg1_1 = new Regex(@"(?<start>\w+\s*\=\s*\w+)");
                     Regex reg1_2 = new Regex(@"(?<condition>\w+\s*(<|>|(<=)|(>=)|(==))\s*\w+)");
-                    Regex reg1_3 = new Regex(@"(?<update>\w+(\+\+)|(\-\-)|(\+=\w+)|(\-=\w+))");
+                    Regex reg1_3 = new Regex(@"(?<update>\w+((\+\+)|(\-\-)|(\+=\w+)|(\-=\w+)))");
                     Match m1_1 = reg1_1.Match((string)sArray[home]);
                     Match m1_2 = reg1_2.Match((string)sArray[home]);
                     Match m1_3 = reg1_3.Match((string)sArray[home]);

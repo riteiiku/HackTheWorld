@@ -403,8 +403,8 @@ namespace HackTheWorld
             }
 #if DEBUG
             // デバッグ用の文字列の描画
-            GraphicsContext.DrawString("line: " + pos.Item1 + ", cursor: " + pos.Item2 + ", maxline: " + _history[_current].MaxLine, _font, Brushes.Black, X, MaxY + 10);
-            GraphicsContext.DrawString("DpiX: " + GraphicsContext.DpiX + ", DpiY:" + GraphicsContext.DpiY, _font, Brushes.Black, X, MaxY + 30);
+            GraphicsContext.DrawString("line: " + pos.Item1 + ", cursor: " + pos.Item2 + ", maxline: " + _history[_current].MaxLine, _font, Brushes.Black, X, ScreenHeight - 100);
+            GraphicsContext.DrawString("DpiX: " + GraphicsContext.DpiX + ", DpiY:" + GraphicsContext.DpiY, _font, Brushes.Black, X, ScreenHeight - 80);
 #endif
         }
 

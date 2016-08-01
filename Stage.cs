@@ -141,6 +141,13 @@ namespace HackTheWorld
                     stage.Objects.Add(i);
                     continue;
                 }
+                if (type == typeof(Gate))
+                {
+                    Gate g = new Gate((float)obj["x"], (float)obj["y"]);
+                    stage.Gates.Add(g);
+                    stage.Objects.Add(g);
+                    continue;
+                }
                 if (type == typeof(EditableBlock))
                 {
                     var b = new EditableBlock((float)obj["x"], (float)obj["y"])
@@ -167,7 +174,7 @@ namespace HackTheWorld
                 }
                 if (type == typeof(Gate))
                 {
-                    var g = new Gate((float)obj["x"], (float)obj["y"]) { NextStage = (string)obj["code"] };
+                    var g = new Gate((float) obj["x"], (float) obj["y"]);
                     stage.Gates.Add(g);
                     stage.Objects.Add(g);
                     continue;
