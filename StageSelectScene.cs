@@ -42,7 +42,7 @@ namespace HackTheWorld
 
             for (int i=0; i<8; i++)
             {
-                if(_menuItems[i].Clicked) Scene.Push(new EditScene(Stage.Load(Path.GetFileName(_files[i]))));
+                if(_menuItems[i].Clicked) Scene.Push(new EditScene(Stage.Load(Path.GetFileName(_files[i])),i));
             }
 
             GraphicsContext.Clear(Color.White);

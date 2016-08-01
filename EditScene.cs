@@ -15,9 +15,10 @@ namespace HackTheWorld
         private Stage _stage;
         private readonly CodeBox _codebox;
         private readonly ConsoleBox _console;
-
-        public EditScene(Stage stage)
+        private int _stageNo;
+        public EditScene(Stage stage, int stageNo=0)
         {
+            _stageNo = stageNo;
             _stage = stage;
             if (stage.EditableObjects.Count == 0) _codebox = new CodeBox();
             else _codebox = new CodeBox(stage.EditableObjects[0]);
@@ -44,7 +45,7 @@ namespace HackTheWorld
         public override void Update(float dt)
         {
             if (_backButton.Clicked) Scene.Pop();
-            if (_startButton.Clicked) Scene.Push(new GameScene(_stage));
+            if (_startButton.Clicked) Scene.Push(new GameScene(_stage,_stageNo));
             if (Input.Control.Pressed && Input.W.Pushed) Application.Exit();
 
             if (Input.Control.Pressed)
