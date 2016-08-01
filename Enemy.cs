@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using static HackTheWorld.Constants;
 
 namespace HackTheWorld
 {

@@ -32,6 +32,7 @@ namespace HackTheWorld
 
         public GameScene(Stage stage,int stageNo=0)
         {
+            _stageNo = stageNo;
             _stage = stage;
             _textArea = new TextArea(stage.EditableObjects[0].Code) { Position = new Vector(CellSize * CellNumX, 20) };
             _console = new ConsoleBox() { Position = new Vector(CellSize * CellNumX, 300) };
@@ -67,7 +68,6 @@ namespace HackTheWorld
                 Position = new Vector(125, 600)
             };
             _menuItem = new List<MenuItem> {_backButton, _resetButton, _pauseButton};
-            _bgImage = Image.FromFile(@"image\cyber1.jpg");
 
             // CodeParser ができていないとeditableObjectsが機能しない。
             // shallow copy だとコンティニュー時に途中からスタートになる。
