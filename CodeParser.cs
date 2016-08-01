@@ -294,10 +294,10 @@ namespace HackTheWorld
             //意味ない言葉が混ざっていないか見たい
             //"size,1,1", "wait,1", "move,1,1,2"
             List<Regex> reg = new List<Regex>();
-            reg.Add(new Regex(@"\s*size\s*\(\s*[\w+|\+|\-|\*|\/|\.|\%]+\s*,\s*[\w+|\+|\-|\*|\/|\.|\%]+\)"));
-            reg.Add(new Regex(@"\s*wait\s*\(\s*[\w+|\+|\-|\*|\/|\.|\%]+\)"));
-            reg.Add(new Regex(@"\s*move\([\w+|\+|\-|\*|\/|\.|\%]+\)"));
-            reg.Add(new Regex(@"\s*\w+\s*=\s*[\w+|\+|\-|\*|\/|\%]+\s*"));
+            reg.Add(new Regex(@"\s*size\s*\(\s*[\w+|\+|\-|\*|\/|\.|\%|\(|\)]+\s*,\s*[\w+|\+|\-|\*|\/|\.|\%|\(|\)]+\)"));
+            reg.Add(new Regex(@"\s*wait\s*\(\s*[\w+|\+|\-|\*|\/|\.|\%|\(|\)]+\)"));
+            reg.Add(new Regex(@"\s*move\([\w+|\+|\-|\*|\/|\.|\%|\(|\)]+\)"));
+            reg.Add(new Regex(@"\s*\w+\s*=\s*[\w+|\+|\-|\*|\/|\%|\(|\)]+\s*"));
             reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*="));
             reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\+"));
             reg.Add(new Regex(@"\s*(?<name>[a-zA-z]+)\s*\-\-"));
@@ -753,11 +753,11 @@ namespace HackTheWorld
             Match equalsMatch = equals.Match(input);
 
             Regex[] regSeparate = new Regex[5];
-            regSeparate[0] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*=\s*(?<right_hand>[(?<value>\w+)|\+|\-|\*|\/|\.]+)\s*");
+            regSeparate[0] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*=\s*(?<right_hand>[(?<value>\w+)|\+|\-|\*|\/|\.|\(|\)]+)\s*");
             regSeparate[1] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\+");
             regSeparate[2] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\-\-");
-            regSeparate[3] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\=\s*(?<value>\w+)");
-            regSeparate[4] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\-\=\s*(?<value>\w+)");
+            regSeparate[3] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\+\=\s*(?<value>[\d|\w|\+|\-|\*|\/|\.|\(|\)]+)");
+            regSeparate[4] = new Regex(@"\s*(?<name>[a-zA-z]+)\s*\-\=\s*(?<value>[\d|\w|\+|\-|\*|\/|\.|\(|\)]+)");
 
             int stepforward = 0;
 
@@ -765,7 +765,7 @@ namespace HackTheWorld
             {
                 if(regSeparate[0].IsMatch(input,stepforward))
                 {
-                    Regex reg = new Regex(@"(?<name>\w+)\s*=\s*(?<right_hand>[\d|\w|\+|\-|\*|\/|\.]+)");
+                    Regex reg = new Regex(@"(?<name>\w+)\s*=\s*(?<right_hand>[\d|\w|\+|\-|\*|\/|\.|\(|\)]+)");
                     Match mat = reg.Match(input,stepforward);
                     str1 = mat.Groups["right_hand"].Value;
                     
@@ -829,10 +829,10 @@ namespace HackTheWorld
                 }
                 if(regSeparate[3].IsMatch(input,stepforward))
                 {
-                    Regex r = new Regex(@"(?<name>[a-zA-z]+)\s*\+\=\s*(?<value>\d+)");
+                    Regex r = new Regex(@"(?<name>[a-zA-z]+)\s*\+\=\s*(?<value>[\d|\w|\+|\-|\*|\/|\.|\(|\)]+)");
                     Match m = r.Match(input,stepforward);
                     str1 = m.Groups["name"].Value;
-                    str2 = m.Groups["value"].Value;
+                    str2 = FourOperations(m.Groups["value"].Value);
                     if(str1 == "right" || str1 == "down" || str1 == "left" || str1 == "up")
                     {
                         return;
@@ -841,10 +841,10 @@ namespace HackTheWorld
                 }
                 if(regSeparate[4].IsMatch(input,stepforward))
                 {
-                    Regex r = new Regex(@"(?<name>[a-zA-z]+)\s*\-\=\s*(?<value>\d+)");
+                    Regex r = new Regex(@"(?<name>[a-zA-z]+)\s*\-\=\s*(?<value>[\d|\w|\+|\-|\*|\/|\.|\(|\)]+)");
                     Match m = r.Match(input,stepforward);
                     str1 = m.Groups["name"].Value;
-                    str2 = m.Groups["value"].Value;
+                    str2 = FourOperations(m.Groups["value"].Value);
                     if(str1 == "right" || str1 == "down" || str1 == "left" || str1 == "up")
                     {
                         return;
