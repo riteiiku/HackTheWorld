@@ -34,7 +34,7 @@ namespace HackTheWorld
                 Size = new Vector(50, 50),
                 Position = new Vector(25, 500)
             };
-            _startButton = new MenuItem(Image.FromFile(@"image\masato3.jpg")) {
+            _startButton = new MenuItem(Image.FromFile(@"image\masato3.png")) {
                 Size = new Vector(50, 50),
                 Position = new Vector(75, 500)
             };

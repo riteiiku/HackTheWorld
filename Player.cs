@@ -27,9 +27,9 @@ namespace HackTheWorld
         public override void Initialize()
         {
             base.Initialize();
-            Image img1 = Image.FromFile(@"image\masato1.jpg");
-            Image img2 = Image.FromFile(@"image\masato2.jpg");
-            Image img3 = Image.FromFile(@"image\masato3.jpg");
+            Image img1 = Image.FromFile(@"image\masato1.png");
+            Image img2 = Image.FromFile(@"image\masato2.png");
+            Image img3 = Image.FromFile(@"image\masato3.png");
             Size = new Vector(CellSize * 7 / 10, CellSize * 9 / 10);
             this.SetAnimation(new[] { img1, img2, img3 }, new[] { 0.5f, 1.0f, 1.5f });
             Anim.Start();
