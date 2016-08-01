@@ -413,7 +413,19 @@ namespace HackTheWorld
         //四則演算を行う
         public static string FourOperations(string s)
         {
-            //Pow（累乗）をする
+            //かっこ優先
+            int counter = 0;
+            while(System.Text.RegularExpressions.Regex.IsMatch(s,@"\([\d+|\+|\-|\*|\/|\(|\)|\%]+\)")&&counter<100)
+            {
+                Regex regInside = new Regex(@"\((?<inside>[\d+|\+|\-|\*|\/|\%]+)\)");
+                Regex regInside2 = new Regex(@"\([\d+|\+|\-|\*|\/|\%]+\)");
+                Match mat = regInside.Match(s);
+                string ans = FourOperations(mat.Groups["inside"].Value);
+                s = regInside2.Replace(s,ans,1);
+                counter++;
+            }
+
+            //Pow（累乗）をする(dt.computeで対応してないっぽい)
             while(System.Text.RegularExpressions.Regex.IsMatch(s,@"[\d|\(|\)|\-]+\^[\d|\(|\)|\-]+"))
             {
                 Regex reg = new Regex(@"(?<left_hand>[\d|\(|\)|\-]+)\^(?<right_hand>[\d|\(|\)|\-]+)");
@@ -423,15 +435,19 @@ namespace HackTheWorld
                 string ans = Math.Pow(left,right).ToString();
                 s = reg.Replace(s,ans,1);
             }
-            if(System.Text.RegularExpressions.Regex.IsMatch(s,@"\d+|[\+|\-|\*|\/]+") && !s.StartsWith(@"[\+|\-|\*|\/]") && !s.EndsWith(@"[\+|\-|\*|\/]") && !s.Contains(@"[\+\+|\-\-|\*\*|\/\/]"))
+
+            if(System.Text.RegularExpressions.Regex.IsMatch(s,@"\d+|[\+|\-|\*|\/|\(|\)|\%]+") && !s.StartsWith(@"[\+|\-|\*|\/]") && !s.EndsWith(@"[\+|\-|\*|\/]") && !s.Contains(@"[\+\+|\-\-|\*\*|\/\/]"))
             {
                 //ここで計算
                 DataTable dt = new DataTable();
 
                 //Type t = dt.Compute(s,"").GetType();
 
-                return dt.Compute(s,"").ToString();
+                s= dt.Compute(s,"").ToString();
             }
+
+            if(System.Text.RegularExpressions.Regex.IsMatch(s,@"[\d+|\-]+")) return s;
+            
             return "四則演算が変";
         }
 
