@@ -32,13 +32,8 @@ namespace HackTheWorld
         public override void Startup()
         {
             _backButton = new MenuItem(Image.FromFile(@"image\back.png")) {
-
-                Size = new Vector(50, 50),
-                Position = new Vector(25, 500)
-            };
-            _startButton = new MenuItem(Image.FromFile(@"image\masato3.png")) {
-                Size = new Vector(50, 50),
-                Position = new Vector(75, 500)
+                Size = new Vector(100, 50),
+                Position = new Vector(0, 600)
             };
             _startButton = new MenuItem(Image.FromFile(@"image\start.png")) {
                 Size = new Vector(100, 50),
