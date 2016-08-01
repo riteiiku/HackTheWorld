@@ -163,13 +163,9 @@ namespace HackTheWorld
                     default:
                         UpdateHash(sArray,i,hash);
                         AssignmentHashValue(sArray,i,hash);
-                        resultArray.Add(sArray[i]);
+                        resultArray.Add(SearchAndAssignment((string)sArray[i]));
                         break;
                 }
-            }
-            for(int i = 0;i < resultArray.Count;i++)
-            {
-                resultArray[i] = SearchAndAssignment((string)resultArray[i]);
             }
             //「3=3」や「4++」を消したい
             ArrayList resultArray2 = new ArrayList();
@@ -444,6 +440,9 @@ namespace HackTheWorld
                 //Type t = dt.Compute(s,"").GetType();
 
                 s= dt.Compute(s,"").ToString();
+                double a = Convert.ToDouble(s.ToString());
+                int b = (int)a;
+                s = b.ToString();
             }
 
             if(System.Text.RegularExpressions.Regex.IsMatch(s,@"[\d+|\-]+")) return s;
@@ -567,6 +566,44 @@ namespace HackTheWorld
         }
         static string SearchAndAssignment(string s)
         {
+            if(s.StartsWith("wait")|| s.StartsWith("size") || s.StartsWith("move"))
+            {
+                int counter = 0;
+                while(System.Text.RegularExpressions.Regex.IsMatch(s,@"wait\([\d+|\+|\-|\*|\/|\(|\)|\%]+\)") && counter < 100)
+                {
+                    Regex regInside = new Regex(@"wait\((?<inside>[\d+|\+|\-|\*|\/|\%|\(|\)]+)\)");
+                    Regex regInside2 = new Regex(@"^wait\([\d+|\+|\-|\*|\/|\%|\(|\)]+\)$");
+                    Match matInside = regInside.Match(s);
+                    string ans = "wait("+FourOperations(matInside.Groups["inside"].Value)+")";
+                    s = regInside2.Replace(s,ans,1);
+                    counter++;
+                }
+                counter = 0;
+                while(System.Text.RegularExpressions.Regex.IsMatch(s,@"size\([\d+|\+|\-|\*|\/|\(|\)|\%]+,[\d+|\+|\-|\*|\/|\(|\)|\%]+\)") && counter < 100)
+                {
+                    Regex regInside = new Regex(@"size\((?<left>[\d+|\+|\-|\*|\/|\(|\)|\%]+),(?<right>[\d+|\+|\-|\*|\/|\(|\)|\%]+)\)");
+                    Regex regInside2 = new Regex(@"^size\([\d+|\+|\-|\*|\/|\(|\)|\%]+,");
+                    Regex regInside3 = new Regex(@",[\d+|\+|\-|\*|\/|\(|\)|\%]+\)$");
+                    Match matInside = regInside.Match(s);
+
+                    string ansLeft = "size("+FourOperations(matInside.Groups["left"].Value)+",";
+                    string ansRight = FourOperations(matInside.Groups["right"].Value)+")";
+
+                    s = regInside2.Replace(s,ansLeft,1);
+                    s = regInside3.Replace(s,ansRight,1);
+                    counter++;
+                }
+                counter = 0;
+                while(System.Text.RegularExpressions.Regex.IsMatch(s,@"move\([\d+|\+|\-|\*|\/|\(|\)|\%]+\)") && counter < 100)
+                {
+                    Regex regInside = new Regex(@"move\((?<inside>[\d+|\+|\-|\*|\/|\%|\(|\)]+)\)");
+                    Regex regInside2 = new Regex(@"^move\([\d+|\+|\-|\*|\/|\%|\(|\)]+\)$");
+                    Match matInside = regInside.Match(s);
+                    string ans = "move(" + FourOperations(matInside.Groups["inside"].Value) + ")";
+                    s = regInside2.Replace(s,ans,1);
+                    counter++;
+                }
+            }
             Regex reg = new Regex(@"\d+[\+|\-|\*|\/|\%]+[\d+|\+|\-|\*|\/|\%]*\d+");
             Match mat = reg.Match(s);
             while(mat.Length > 0)
@@ -1045,7 +1082,7 @@ namespace HackTheWorld
                                     default:
                                         UpdateHash(tArray,i,hash);
                                         AssignmentHashValue(tArray,i,hash);
-                                        result.Add(tArray[i]);
+                                        result.Add(SearchAndAssignment((string)tArray[i]));
                                         i++;
                                         break;
                                 }
@@ -1112,7 +1149,7 @@ namespace HackTheWorld
                                     break;
                                 default:
                                     AssignmentHashValue(tArray,j,hash);
-                                    result.Add(tArray[j]);
+                                    result.Add(SearchAndAssignment((string)tArray[j]));
                                     j++;
                                     break;
                             }
@@ -1194,7 +1231,7 @@ namespace HackTheWorld
                             break;
                         default:
                             AssignmentHashValue(sArray,home + i,hash);
-                            result.Add(sArray[home + i]);
+                            result.Add(SearchAndAssignment((string)sArray[home + i]));
                             i++;
                             break;
                     }
@@ -1238,7 +1275,7 @@ namespace HackTheWorld
                             break;
                         default:
                             AssignmentHashValue(sArray,home + i,hash);
-                            result.Add(sArray[home + i]);
+                            result.Add(SearchAndAssignment((string)sArray[home + i]));
                             i++;
                             break;
                     }
@@ -1301,7 +1338,7 @@ namespace HackTheWorld
                                 break;
                             default:
                                 AssignmentHashValue(tArray,home + i,hash);
-                                result.Add(tArray[home + i]);
+                                result.Add(SearchAndAssignment((string)tArray[home + i]));
                                 i++;
                                 break;
                         }
