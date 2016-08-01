@@ -71,6 +71,7 @@
     <Compile Include="Animation.cs" />
     <Compile Include="Block.cs" />
     <Compile Include="Bullet.cs" />
+    <Compile Include="ClearScene.cs" />
     <Compile Include="ConsoleBox.cs" />
     <Compile Include="ContinueScene.cs" />
     <Compile Include="EditableEnemy.cs" />

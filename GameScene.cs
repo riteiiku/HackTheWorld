@@ -18,7 +18,7 @@ namespace HackTheWorld
         private MenuItem _pauseButton;
         private readonly TextArea _textArea;
         private readonly ConsoleBox _console;
-
+        private readonly int _stageNo;
         // ゲーム内変数宣言
         private Stage _stage;
         private List<GameObject> _objects;
@@ -30,7 +30,7 @@ namespace HackTheWorld
         private List<Item> _items;
         private List<Gate> _gates;
 
-        public GameScene(Stage stage)
+        public GameScene(Stage stage,int stageNo=0)
         {
             _stage = stage;
             _textArea = new TextArea(stage.EditableObjects[0].Code) { Position = new Vector(CellSize * CellNumX, 20) };
@@ -146,7 +146,7 @@ namespace HackTheWorld
             {
                 if (_player.Intersects(g))
                 {
-                    Scene.Pop();
+                    Scene.Push(new ClearScene(_stageNo));
                     return;
                 }
             }
