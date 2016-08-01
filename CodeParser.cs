@@ -241,14 +241,14 @@ namespace HackTheWorld
                         if(FirstEnd(sArray,j)) count--;
                         if(count == 0)
                         {
-                            //if(!isIf(sArray,i))
-                            //{
-                            //    //WindowContext.Invoke((Action)(() => {
-                            //    //    Console.WriteLine("ifとendはいるみたいだけど\n文の中身が違う");
-                            //    //}));
-                            //    Console.WriteLine("ifとendはいるみたいだけど\n文の中身が違う");
-                            //    return false;
-                            //}
+                            if(!isIf(sArray,i))
+                            {
+                                //WindowContext.Invoke((Action)(() => {
+                                //    Console.WriteLine("ifとendはいるみたいだけど\n文の中身が違う");
+                                //}));
+                                Console.WriteLine("ifとendはいるみたいだけど\n文の中身が違う");
+                                return false;
+                            }
                             countFunction--;
                             break;
                         }
@@ -566,13 +566,13 @@ namespace HackTheWorld
         }
         static string SearchAndAssignment(string s)
         {
-            if(s.StartsWith("wait")|| s.StartsWith("size") || s.StartsWith("move"))
+            if(Regex.IsMatch(s,@"wait")|| Regex.IsMatch(s,@"size") || Regex.IsMatch(s,@"move"))
             {
                 int counter = 0;
                 while(System.Text.RegularExpressions.Regex.IsMatch(s,@"wait\([\d+|\+|\-|\*|\/|\(|\)|\%]+\)") && counter < 100)
                 {
                     Regex regInside = new Regex(@"wait\((?<inside>[\d+|\+|\-|\*|\/|\%|\(|\)]+)\)");
-                    Regex regInside2 = new Regex(@"^wait\([\d+|\+|\-|\*|\/|\%|\(|\)]+\)$");
+                    Regex regInside2 = new Regex(@"wait\([\d+|\+|\-|\*|\/|\%|\(|\)]+\)");
                     Match matInside = regInside.Match(s);
                     string ans = "wait("+FourOperations(matInside.Groups["inside"].Value)+")";
                     s = regInside2.Replace(s,ans,1);
@@ -582,8 +582,8 @@ namespace HackTheWorld
                 while(System.Text.RegularExpressions.Regex.IsMatch(s,@"size\([\d+|\+|\-|\*|\/|\(|\)|\%]+,[\d+|\+|\-|\*|\/|\(|\)|\%]+\)") && counter < 100)
                 {
                     Regex regInside = new Regex(@"size\((?<left>[\d+|\+|\-|\*|\/|\(|\)|\%]+),(?<right>[\d+|\+|\-|\*|\/|\(|\)|\%]+)\)");
-                    Regex regInside2 = new Regex(@"^size\([\d+|\+|\-|\*|\/|\(|\)|\%]+,");
-                    Regex regInside3 = new Regex(@",[\d+|\+|\-|\*|\/|\(|\)|\%]+\)$");
+                    Regex regInside2 = new Regex(@"size\([\d+|\+|\-|\*|\/|\(|\)|\%]+,");
+                    Regex regInside3 = new Regex(@",[\d+|\+|\-|\*|\/|\(|\)|\%]+\)");
                     Match matInside = regInside.Match(s);
 
                     string ansLeft = "size("+FourOperations(matInside.Groups["left"].Value)+",";
@@ -597,7 +597,7 @@ namespace HackTheWorld
                 while(System.Text.RegularExpressions.Regex.IsMatch(s,@"move\([\d+|\+|\-|\*|\/|\(|\)|\%]+\)") && counter < 100)
                 {
                     Regex regInside = new Regex(@"move\((?<inside>[\d+|\+|\-|\*|\/|\%|\(|\)]+)\)");
-                    Regex regInside2 = new Regex(@"^move\([\d+|\+|\-|\*|\/|\%|\(|\)]+\)$");
+                    Regex regInside2 = new Regex(@"move\([\d+|\+|\-|\*|\/|\%|\(|\)]+\)");
                     Match matInside = regInside.Match(s);
                     string ans = "move(" + FourOperations(matInside.Groups["inside"].Value) + ")";
                     s = regInside2.Replace(s,ans,1);
@@ -1372,14 +1372,15 @@ namespace HackTheWorld
 
         public static bool isIf(ArrayList sArray,int home)
         {
-            string[] reg = new string[5];
-            reg[0] = @"[0-9a-zA-Z]+\s*\<\s*[0-9a-zA-Z]+";
-            reg[1] = @"[0-9a-zA-Z]+\s*\>\s*[0-9a-zA-Z]+";
-            reg[2] = @"[0-9a-zA-Z]+\s*\<\s*\=\s*[0-9a-zA-Z]+";
-            reg[3] = @"[0-9a-zA-Z]+\s*\>\s*\=\s*[0-9a-zA-Z]+";
-            reg[4] = @"[0-9a-zA-Z]+\s*\=\s*\=\s*[0-9a-zA-Z]+";
+            List<string> reg = new List<string>();
+            reg.Add(@"[\d+|\w+|\+|\-|\*|\/|\(|\)|\%]+\s*\<\s*[\d+|\w+|\+|\-|\*|\/|\(|\)|\%]+");
+            reg.Add(@"[\d+|\w+|\+|\-|\*|\/|\(|\)|\%]+\s*\>\s*[\d+|\w+|\+|\-|\*|\/|\(|\)|\%]+");
+            reg.Add(@"[\d+|\w+|\+|\-|\*|\/|\(|\)|\%]+\s*\<\s*\=\s*[\d+|\w+|\+|\-|\*|\/|\(|\)|\%]+");
+            reg.Add(@"[\d+|\w+|\+|\-|\*|\/|\(|\)|\%]+\s*\>\s*\=\s*[\d+|\w+|\+|\-|\*|\/|\(|\)|\%]+");
+            reg.Add(@"[\d+|\w+|\+|\-|\*|\/|\(|\)|\%]+\s*\=\s*\=\s*[\d+|\w+|\+|\-|\*|\/|\(|\)|\%]+");
+            reg.Add(@"player.ontop");
 
-            for(int i = 0;i < reg.Length;i++)
+            for(int i = 0;i < reg.Count;i++)
             {
                 if(Regex.IsMatch((string)sArray[home],@"if\s*\(" + reg[i] + @"\)\s*"))
                 {
